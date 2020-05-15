@@ -2,7 +2,7 @@
 >**EN:**
 >A Valve Hammer Editor modification to set it's language to Spanish (Castellano).
 >
->Currently only works for **Portal 2 SDK**, more games could be added in a future
+>Currently only works for **Portal 2 SDK**, more games could be added in a future.
 >Sadly, I couldn't translate the entire program, because some strings are inside the `.exe`, wich cannot be modified. But almost the entire thing is properly translated.
 
 
