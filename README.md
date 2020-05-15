@@ -1,5 +1,5 @@
 # HammerSpanish
-A Valve Hammer editor modification to set the program language to Spanish (Castellano)
+A Valve Hammer editor modification to set the program language to Spanish (Castellano)./n
 Currently only works for Portal 2 SDK, more games could be possible in a future.
 Sadly, I couldn't translate the entire program, because some strings are inside the `.exe`, wich cannot be modified. But almost the entire thing is properly translated.
 
