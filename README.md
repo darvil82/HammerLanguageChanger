@@ -12,7 +12,8 @@
 >Actualmente sólo funciona para el **SDK de Portal 2**, se podrían añadir más juegos en un futuro.
 >Por desgracia, no he podido traducir el programa el completo, porque algunos *strings* se encuentran en el archivo `.exe`, el cual no puede ser modificado. Aunque prácticamente está traducido al completo.
 
->![Hammer Spanish UI](https://i.imgur.com/G58Jues.png)
+![Hammer Spanish UI](https://i.imgur.com/G58Jues.png)
+![Hammer Spanish UI GIF 1](https://media.giphy.com/media/gJ2SMBaXdmGwQ0iBlc/giphy.gif)
 
 
 
