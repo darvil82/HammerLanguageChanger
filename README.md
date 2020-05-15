@@ -38,4 +38,4 @@
 
 
 >**ES:**
->Para desinstalarlo, puedes realizar el mismo proceso que el de instalación, pero con el archivo `DLL`*original* que incluyo. También puedes eliminar el `DLL`, y verificar la integridad de los archivos del SDK desde Steam.
+>Para desinstalarlo, puedes realizar el mismo proceso que el de instalación, pero con el archivo `DLL`*original* incluído. También puedes eliminar el `DLL`, y verificar la integridad de los archivos del SDK desde Steam.
