@@ -7,7 +7,7 @@
 
 
 >**ES:**
->Modificiación para el editor Hammer de Valve, para cambiar el idioma del mismo a Español (Castellano).
+>Modificación para el editor Hammer de Valve, para cambiar el idioma del mismo a Español (Castellano).
 >
 >Actualmente sólo funciona para el **SDK de Portal 2**, se podrían añadir más juegos en un futuro.
 >Por desgracia, no he podido traducir el programa al completo, porque algunos *strings* se encuentran en el archivo `.exe`, el cual no puede ser modificado. Aunque prácticamente está traducido al completo.
