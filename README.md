@@ -21,11 +21,11 @@
 
 ## How to install - Instalación
 >**EN:**
->In order to install this you only have to move the `hammer_dll.dll` to the `Portal 2/bin` folder. Make sure Hammer is closed while doing this.
+>In order to install this you only have to replace the `hammer_dll.dll` in the `Portal 2/bin` folder with the one provided. Make sure Hammer is closed while doing this.
 
 
 >**ES:**
->Para instalarlo, simplemente debes mover el archivo`hammer_dll.dll` a la carpeta `Portal 2/bin`. Asegúrate de que Hammer se encuentra cerrado al reemplazar el archivo.
+>Para instalarlo, simplemente debes reemplazar el archivo`hammer_dll.dll` en la carpeta `Portal 2/bin` por el archivo incluido. Asegúrate de que Hammer se encuentra cerrado al reemplazar el archivo.
 
 
 
