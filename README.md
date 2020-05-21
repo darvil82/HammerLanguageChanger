@@ -1,4 +1,4 @@
-# HammerSpanish
+# HammerLanguagueChanger
 >**EN:**
 >A Valve Hammer Editor modification to set it's language to Spanish (Castellano). It also changes some dialog layouts to make them better looking.
 >
