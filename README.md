@@ -1,3 +1,7 @@
+## ***This is currently being worked on. More information will be available in a near future.***
+
+
+
 # Hammer Language Changer
 
 >A Valve Hammer Editor modification to set it's language to Spanish (Castellano). It also changes some dialog layouts to make them better looking.
@@ -8,5 +12,3 @@
 
 ![Hammer Spanish UI](https://i.imgur.com/G58Jues.png)
 ![Hammer Spanish UI GIF 1](https://media.giphy.com/media/gJ2SMBaXdmGwQ0iBlc/giphy.gif)
-
-***This is currently being worked on***
