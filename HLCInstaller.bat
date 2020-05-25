@@ -1,1 +1,2 @@
-TEST
+echo test
+pause
