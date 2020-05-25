@@ -12,8 +12,8 @@ Sadly, it's not possible to translate the entire program, because some strings a
 
 Would you like to translate Hammer to to your language? Help us to do so!
 
-If you want to change the hammer language to any of the availables, click here. (placeholder)
-If you want to help us to create another translation, click here. (placeholder)
+**If you want to change the hammer language to any of the availables, click here.** (placeholder)  
+**If you want to help us to create another translation, click here.** (placeholder)  
 
 ![HLCInstaller](https://i.imgur.com/wEL5XMH.png)
 ![HLC Spanish Preview](https://media.giphy.com/media/gJ2SMBaXdmGwQ0iBlc/giphy.gif)
