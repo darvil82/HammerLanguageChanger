@@ -11,7 +11,7 @@
 
 >**Available Languages:**  
 > * Spanish - DarviL  
-> * French (In development) - Orinji Nejo  
+> * French (In development) - Orinji Neko  
 > * Original - Valve  
 
 Currently only works for **Portal 2 SDK**, more games could be added in a future.  
