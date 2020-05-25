@@ -100,7 +100,6 @@ if "%download_required%"=="1" (
 
 
 
-
 :steam_find
 cls
 if exist "data/steam_path.hlc" set /p "steam_path="<data/steam_path.hlc
