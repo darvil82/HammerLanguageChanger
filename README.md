@@ -7,7 +7,7 @@
 
 
 
-***A Valve Hammer Editor modification change it's language.***
+***A Valve Hammer Editor modification to change it's language.***
 
 >**Available Languages:**  
 > * Spanish - DarviL  
