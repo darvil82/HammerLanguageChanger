@@ -19,7 +19,8 @@ Sadly, it's not possible to translate the entire program, because some strings a
 
 Would you like to translate Hammer to to your language? Help us to do so!
 
-**If you want to change the hammer language to any of the availables, click here.** https://github.com/L89David/HammerLanguageChanger/wiki/Installation
+**If you want to change the hammer language to any of the availables: https://github.com/L89David/HammerLanguageChanger/wiki/Installation**  
+
 **If you want to help us to create another translation, click here.** (placeholder)  
 
 ![HLCInstaller](https://i.imgur.com/wEL5XMH.png)
