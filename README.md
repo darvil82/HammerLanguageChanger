@@ -1,4 +1,10 @@
 # Hammer Language Changer
+[![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/L89David/HammerLanguageChanger/issues)
+[![GitHub contributors](https://img.shields.io/github/contributors/L89David/HammerLanguageChanger?style=flat)]()
+[![HitCount](http://hits.dwyl.com/L89David/HammerLanguageChanger.svg)](http://hits.dwyl.com/L89David/HammerLanguageChanger)  
+[![Issues](https://img.shields.io/github/issues-raw/L89David/HammerLanguageChanger?maxAge=25000)](https://github.com/L89David/HammerLanguageChanger/issues) 
+[![GitHub Release](https://img.shields.io/github/release/L89David/HammerLanguageChanger?style=flat)]()
+
 
 A Valve Hammer Editor modification change it's language.
 
@@ -12,7 +18,7 @@ Sadly, it's not possible to translate the entire program, because some strings a
 
 Would you like to translate Hammer to to your language? Help us to do so!
 
-**If you want to change the hammer language to any of the availables, click here.** (placeholder)  
+**If you want to change the hammer language to any of the availables, click here.** https://github.com/L89David/HammerLanguageChanger/wiki/Installation
 **If you want to help us to create another translation, click here.** (placeholder)  
 
 ![HLCInstaller](https://i.imgur.com/wEL5XMH.png)
