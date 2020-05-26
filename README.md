@@ -1,5 +1,3 @@
-## Note: The documentation of this project is temporally unfinished.  
-
 # Hammer Language Changer
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/L89David/HammerLanguageChanger/issues)
 [![GitHub contributors](https://img.shields.io/github/contributors/L89David/HammerLanguageChanger?style=flat)]()
