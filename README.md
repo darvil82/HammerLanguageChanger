@@ -1,11 +1,11 @@
-# Hammer Language Changer
+![HLC Logo](https://i.imgur.com/Yes6Flq.png)
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/L89David/HammerLanguageChanger/issues)
 [![GitHub contributors](https://img.shields.io/github/contributors/L89David/HammerLanguageChanger?style=flat)]()
 [![HitCount](http://hits.dwyl.com/L89David/HammerLanguageChanger.svg)](http://hits.dwyl.com/L89David/HammerLanguageChanger)  
 [![Issues](https://img.shields.io/github/issues-raw/L89David/HammerLanguageChanger?maxAge=25000)](https://github.com/L89David/HammerLanguageChanger/issues) 
 [![GitHub Release](https://img.shields.io/github/release/L89David/HammerLanguageChanger?style=flat)]()  
 
-
+***
 
 ***A Valve Hammer Editor modification to change it's language.***
 
