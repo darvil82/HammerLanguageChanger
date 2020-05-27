@@ -51,9 +51,9 @@ echo    ╚═══════════════════════
 
 ::Download the git ver file, wich contents the latest version number. Then compare it with the current version. Horrid way of checking what's the latest version: Yes. Works: Yes.
 bitsadmin /transfer /download https://github.com/L89David/HammerLanguageChanger/blob/master/info/version.hlc?raw=true "%cd%\data\version.hlc" >nul
-set /p current_version=<"%cd%\data\version.hlc"
+set /p ver_git_number=<"%cd%\data\version.hlc"
 del "data\version.hlc" /f
-if "%ver_number%" LSS "%current_version%" (
+if "%ver_number%" LSS "%ver_git_number%" (
 	echo [%time%]: A newer version has been found. >> log.txt
 	cls
 	color f6
@@ -65,8 +65,8 @@ if "%ver_number%" LSS "%current_version%" (
 	echo    ║ Press any key to install the new version      ║
 	echo    ║ automatically.                                ║
 	echo    ╚═══════════════════════════════════════════════╝
-	echo     Current version: %ver%
-	echo     New version: %current_version%
+	echo     Current Compilation Nº: %ver_number%
+	echo     New Compilation Nº: %ver_git_number%
 	pause>nul
 	bitsadmin /transfer /download https://github.com/L89David/HammerLanguageChanger/blob/master/info/updater.bat?raw=true "%cd%\updated.bat" >nul
 	start "" updater.bat "%cd%"
