@@ -4,7 +4,7 @@
 color f1
 chcp 65001 >Nul
 set "mode=mode con cols=55 lines=20"
-set ver=1.0.1
+set ver=1.1.1
 set ver_number=2
 title Hammer Language Changer Installer - V%ver%
 cls
