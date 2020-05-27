@@ -68,7 +68,15 @@ if "%ver_number%" LSS "%ver_git_number%" (
 	echo     Current Compilation Nº: %ver_number%
 	echo     New Compilation Nº: %ver_git_number%
 	pause>nul
-	bitsadmin /transfer /download https://github.com/L89David/HammerLanguageChanger/blob/master/info/updater.bat?raw=true "%cd%\updated.bat" >nul
+	
+	cls
+	echo    ╔═══════════════════════════════════════════════╗
+	echo    ║ Hammer Language Changer Installer      ![▒▒▒] ║
+	echo    ╟───────────────────────────────────────────────╢
+	echo    ║ Initializing update process...                ║
+	echo    ║ Please, wait...                               ║
+	echo    ╚═══════════════════════════════════════════════╝
+	bitsadmin /transfer /download https://github.com/L89David/HammerLanguageChanger/blob/master/info/updater.bat?raw=true "%cd%\updater.bat" >nul
 	start "" updater.bat "%cd%"
 	exit
 ) else echo [%time%]: Using latest version. >> log.txt
