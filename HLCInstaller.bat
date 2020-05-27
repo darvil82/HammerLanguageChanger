@@ -12,6 +12,7 @@ cls
 
 
 
+
 :checksum
 %mode%
 (
@@ -48,10 +49,11 @@ echo    ║ Checking for updates...                       ║
 echo    ║ Please, wait...                               ║
 echo    ╚═══════════════════════════════════════════════╝
 
+::Download the git ver file, wich contents the latest version number. Then compare it with the current version. Horrid way of checking what's the latest version: Yes. Works: Yes.
 bitsadmin /transfer /download https://github.com/L89David/HammerLanguageChanger/blob/master/info/version.hlc?raw=true "%cd%\data\version.hlc" >nul
-set /p current_version=<"%cd%\data\version.hlc"
+set /p ver_git_number=<"%cd%\data\version.hlc"
 del "data\version.hlc" /f
-if "%ver%" LSS "%current_version%" (
+if "%ver_number%" LSS "%ver_git_number%" (
 	echo [%time%]: A newer version has been found. >> log.txt
 	cls
 	color f6
@@ -63,16 +65,27 @@ if "%ver%" LSS "%current_version%" (
 	echo    ║ Press any key to install the new version      ║
 	echo    ║ automatically.                                ║
 	echo    ╚═══════════════════════════════════════════════╝
-	echo     Current version: %ver%
-	echo     New version: %current_version%
+	echo     Current Compilation Nº: %ver_number%
+	echo     New Compilation Nº: %ver_git_number%
 	pause>nul
-	bitsadmin /transfer /download https://github.com/L89David/HammerLanguageChanger/blob/master/info/updater.bat?raw=true "%cd%\updated.bat" >nul
+	
+	cls
+	echo    ╔═══════════════════════════════════════════════╗
+	echo    ║ Hammer Language Changer Installer      ![▒▒▒] ║
+	echo    ╟───────────────────────────────────────────────╢
+	echo    ║ Initializing update process...                ║
+	echo    ║ Please, wait...                               ║
+	echo    ╚═══════════════════════════════════════════════╝
+	bitsadmin /transfer /download https://github.com/L89David/HammerLanguageChanger/blob/master/info/updater.bat?raw=true "%cd%\updater.bat" >nul
 	start "" updater.bat "%cd%"
 	exit
 ) else echo [%time%]: Using latest version. >> log.txt
 
+
 set total_files=2
 
+
+::If any of the required files is missing, redownload all of them.
 if "%download_required%"=="1" (
 	echo [%time%]: Asset files are missing. Starting download process... >> log.txt
 	cls
@@ -97,10 +110,13 @@ if "%download_required%"=="1" (
 	echo [%time%]: Download process finished. >> log.txt
 	timeout 3 /nobreak >nul
 )
-	
 
 
 
+
+
+::This function will try to find where is Steam located, as you can see, his IQ it's not really high, and I'm pretty sure he will need help...
+::That's why I did this, if it can't find Steam, it'll just prompt you to put the Steam path. I hope people will read that YOU CAN'T PUT QUOTATION MARKS...
 :steam_find
 cls
 if exist "data/steam_path.hlc" set /p "steam_path="<data/steam_path.hlc
@@ -135,6 +151,7 @@ if not exist "%steam_path%\steam.exe" (
 	exit
 )
 echo %steam_path%> "data\steam_path.hlc"
+
 
 
 
@@ -179,6 +196,7 @@ set "state_es=   "
 set "state_fr=   "
 set "state_original=   "
 
+::Check if the hlc config file is stored inside bin... This file just tells this crappy function wich language is being used rn. If not found, just set that user is using Valve's DLL.
 if exist "%bin_path%\HLC\language_selected.hlc" set /p current_language=<"%bin_path%\HLC\language_selected.hlc"
 if exist "%bin_path%\HLC\language_selected.hlc" (
 	echo [%time%]: Getting current config from "%bin_path%\HLC\language_selected.hlc". {current_language=%current_language%} >> log.txt
@@ -215,6 +233,8 @@ if %errorlevel%==3 set selected_dll=original
 
 
 
+
+::This just works.
 :step3
 %mode%
 cls
@@ -268,11 +288,13 @@ if %errorlevel%==1 (
 )
 
 
+::And there we go, the final step. Here we are copying the file (finally). As you can see, it also created that file in bin, wich will tell the Installer what language is being used rn.
 :step3_proceed
 if not exist "data\%file_prefix%_%selected_dll%.dll" echo [%time%]: Couldn't find "data\%file_prefix%_%selected_dll%.dll". >> log.txt &exit
 copy "data\%file_prefix%_%selected_dll%.dll" "%bin_path%\hammer_dll.dll" /y >nul &&echo [%time%]: %selected_dll% DLL has been copied succesfully as "%bin_path%\hammer_dll.dll". >> log.txt
 if not exist "%bin_path%\HLC" mkdir "%bin_path%\HLC"
 echo %selected_dll%> "%bin_path%\HLC\language_selected.hlc"
+
 
 
 
