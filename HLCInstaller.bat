@@ -70,6 +70,7 @@ if "%ver_number%" LSS "%ver_git_number%" (
 	pause>nul
 	
 	cls
+	echo:
 	echo    ╔═══════════════════════════════════════════════╗
 	echo    ║ Hammer Language Changer Installer      ![▒▒▒] ║
 	echo    ╟───────────────────────────────────────────────╢
