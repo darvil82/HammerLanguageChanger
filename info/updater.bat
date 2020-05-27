@@ -16,8 +16,7 @@ echo    ╟───────────────────────
 echo    ║ Downloading latest version.                   ║
 echo    ║ Please, wait...                               ║
 echo    ╚═══════════════════════════════════════════════╝
-echo %1
 bitsadmin /transfer /download https://github.com/L89David/HammerLanguageChanger/blob/master/HLCInstaller.bat?raw=true %1/HLCInstaller.bat >nul
-rd "data" /s /q
+rd "%cd%/data" /s /q
 start "" "HLCInstaller.bat"
 exit
