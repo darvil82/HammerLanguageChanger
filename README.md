@@ -1,4 +1,4 @@
-![HLC Logo](https://i.imgur.com/Yes6Flq.png)
+![HLC Logo](https://i.imgur.com/0Rfijun.png)
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/L89David/HammerLanguageChanger/issues)
 [![GitHub contributors](https://img.shields.io/github/contributors/L89David/HammerLanguageChanger?style=flat)]()
 [![HitCount](http://hits.dwyl.com/L89David/HammerLanguageChanger.svg)](http://hits.dwyl.com/L89David/HammerLanguageChanger)  
