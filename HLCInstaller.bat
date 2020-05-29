@@ -83,7 +83,7 @@ if "%ver_number%" LSS "%ver_git_number%" (
 ) else echo [%time%]: Using latest version. >> log.txt
 
 
-set total_files=3
+set total_files=4
 
 
 ::If any of the required files is missing, redownload all of them.
@@ -103,10 +103,13 @@ if "%download_required%"=="1" (
 	echo        [1/%total_files%] Downloading "dlls/p2_spanish.dll"...
 	bitsadmin /transfer /download https://github.com/L89David/HammerLanguageChanger/blob/master/dlls/p2_spanish.dll?raw=true "%cd%\data\p2_spanish.dll" >nul &&echo [%time%]: Downloaded "p2_spanish.dll". >> log.txt
 
-	echo        [2/%total_files%] Downloading "dlls/p2_original.dll"...
+	echo        [2/%total_files%] Downloading "dlls/p2_french.dll"...
+	bitsadmin /transfer /download https://github.com/L89David/HammerLanguageChanger/blob/master/dlls/p2_french.dll?raw=true "%cd%\data\p2_spanish.dll" >nul &&echo [%time%]: Downloaded "p2_french.dll". >> log.txt
+
+	echo        [3/%total_files%] Downloading "dlls/p2_original.dll"...
 	bitsadmin /transfer /download https://github.com/L89David/HammerLanguageChanger/blob/master/dlls/p2_original.dll?raw=true "%cd%\data\p2_original.dll" >nul &&echo [%time%]: Downloaded "p2_original.dll". >> log.txt
 	
-	echo        [3/%total_files%] Downloading "dlls/info.txt"...
+	echo        [4/%total_files%] Downloading "dlls/info.txt"...
 	bitsadmin /transfer /download https://github.com/L89David/HammerLanguageChanger/blob/master/dlls/info.txt?raw=true "%cd%\data\dlls_info.txt" >nul &&echo [%time%]: Downloaded "dlls_info.txt". >> log.txt
 
 	echo ───────────────────────────────────────────────────────
@@ -226,12 +229,13 @@ echo    ╔═══════════════════════
 echo    ║ Available languages:                          ║
 echo    ╟───────────────────────────────────────────────╢
 echo    ║ A: Spanish - DarviL %state_es%                       ║
+echo    ║ B: French - Orinji Neko %state_fr%                   ║
 echo    ╟───────────────────────────────────────────────╢
-echo    ║ B: Original - Valve %state_original%                       ║
+echo    ║ C: Original - Valve %state_original%                       ║
 echo    ╚═══════════════════════════════════════════════╝
-choice /c ab /n >nul
+choice /c abc /n >nul
 if %errorlevel%==1 set selected_dll=spanish
-if %errorlevel%==2 set selected_dll=original
+if %errorlevel%==2 set selected_dll=french
 if %errorlevel%==3 set selected_dll=original
 
 
