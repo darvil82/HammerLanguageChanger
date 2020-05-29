@@ -19,7 +19,6 @@ echo    ║ will finish automatically.                    ║
 echo    ║ Please, wait...                               ║
 echo    ╚═══════════════════════════════════════════════╝
 bitsadmin /transfer /download https://github.com/L89David/HammerLanguageChanger/blob/master/HLCInstaller.bat?raw=true "%1/HLCInstaller.bat" >nul
-pause
 if exist "%1/data" rd "%1/data" /s /q
 start "" "HLCInstaller.bat"
 exit
