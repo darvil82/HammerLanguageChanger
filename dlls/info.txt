@@ -1,0 +1,6 @@
+DLLS Info:
+---------------------------------------------------
+
+	- Portal 2:
+		Spanish (1.1.0) - DarviL
+		Original - Valve
