@@ -27,6 +27,7 @@ cls
 if not exist "data" mkdir "data"
 if not exist "data/p2_spanish.dll" set download_required=1
 if not exist "data/p2_original.dll" set download_required=1
+if not exist "data/p2_french.dll" set download_required=1
 
 if exist "updater.bat" (
 	del "updater.bat" /f /q
@@ -104,7 +105,7 @@ if "%download_required%"=="1" (
 	bitsadmin /transfer /download https://github.com/L89David/HammerLanguageChanger/blob/master/dlls/p2_spanish.dll?raw=true "%cd%\data\p2_spanish.dll" >nul &&echo [%time%]: Downloaded "p2_spanish.dll". >> log.txt
 
 	echo        [2/%total_files%] Downloading "dlls/p2_french.dll"...
-	bitsadmin /transfer /download https://github.com/L89David/HammerLanguageChanger/blob/master/dlls/p2_french.dll?raw=true "%cd%\data\p2_spanish.dll" >nul &&echo [%time%]: Downloaded "p2_french.dll". >> log.txt
+	bitsadmin /transfer /download https://github.com/L89David/HammerLanguageChanger/blob/master/dlls/p2_french.dll?raw=true "%cd%\data\p2_french.dll" >nul &&echo [%time%]: Downloaded "p2_french.dll". >> log.txt
 
 	echo        [3/%total_files%] Downloading "dlls/p2_original.dll"...
 	bitsadmin /transfer /download https://github.com/L89David/HammerLanguageChanger/blob/master/dlls/p2_original.dll?raw=true "%cd%\data\p2_original.dll" >nul &&echo [%time%]: Downloaded "p2_original.dll". >> log.txt
