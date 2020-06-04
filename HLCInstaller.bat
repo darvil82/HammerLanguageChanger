@@ -24,6 +24,19 @@ cls
 ) > log.txt
 
 
+::Check for start parameters
+if "%1"=="force_update" (
+	echo [%time%]: Forcing the program to update... >> log.txt
+	set ver_number=0
+)
+if "%1"=="del_data" (
+	if exist "data" (
+		rd "data" /s /q
+		echo [%time%]: Removed data folder succesfully. >> log.txt
+	) else echo [%time%]: "data" folder does not exist. Unable to delete the files. >> log.txt
+)
+
+
 if not exist "data" mkdir "data"
 if not exist "data/p2_spanish.dll" set download_required=1
 if not exist "data/p2_original.dll" set download_required=1
