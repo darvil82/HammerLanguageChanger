@@ -4,8 +4,8 @@
 color f1
 chcp 65001 >Nul
 set "mode=mode con cols=55 lines=20"
-set ver=0.1.1
-set ver_number=2
+set ver=0.2
+set ver_number=3
 title Hammer Language Changer Installer - V%ver%
 cls
 
@@ -51,7 +51,7 @@ if exist "updater.bat" (
 ::Check if user it's connected to internet
 ping google.com /n 1 >nul
 if %errorlevel%==1 (
-	echo [%time%]: Having an stable internet conection is required for using the program. >> log.txt
+	echo [%time%]: Having a stable internet conection is required for using the program. >> log.txt
 	exit
 )
 
