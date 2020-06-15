@@ -1,20 +1,11 @@
 ::Written by David Losantos (DarviL)
 
 @echo off
-color f1
-chcp 65001 >Nul
-set "mode=mode con cols=55 lines=20"
-set ver=0.2
-set ver_number=3
-title Hammer Language Changer Installer - V%ver%
-cls
-
-
-
+chcp 65001 >nul
+echo Please, wait...
 
 
 :checksum
-%mode%
 (
 	echo Hammer Language Changer Installer LOG
 	echo Created by DarviL.
@@ -24,7 +15,24 @@ cls
 ) > log.txt
 
 
-::Check for start parameters
+::Check vars
+set ver=1.0
+set ver_number=3
+echo [Version: "%ver%"] [Compilation: "%ver_number%"] >> log.txt
+
+set "mode=mode con cols=55 lines=20"
+
+set colors_normal=color f1
+set colors_error=color fc
+set colors_info=color f6
+set colors_correct=color f2
+
+title Hammer Language Changer Installer - V%ver%
+%mode%
+%colors_normal%
+
+
+::Check parameters
 if "%1"=="force_update" (
 	echo [%time%]: Forcing the program to update... >> log.txt
 	set ver_number=0
@@ -35,9 +43,15 @@ if "%1"=="del_data" (
 		echo [%time%]: Removed data folder succesfully. >> log.txt
 	) else echo [%time%]: "data" folder does not exist. Unable to delete the files. >> log.txt
 )
+if "%1"=="skip_downloads" (
+	set skip_downloads=1
+	echo [%time%]: Skipping all the possible downloads. >> log.txt
+)
 
 
+::Check files
 if not exist "data" mkdir "data"
+if not exist "%temp%\HLC" mkdir "%temp%\HLC"
 if not exist "data/p2_spanish.dll" set download_required=1
 if not exist "data/p2_original.dll" set download_required=1
 if not exist "data/p2_french.dll" set download_required=1
@@ -47,14 +61,25 @@ if exist "updater.bat" (
 	echo [%time%]: Program updated succesfully! >> log.txt
 )
 
+if "%skip_downloads%" == "1" goto steam_find
+
 
 ::Check if user it's connected to internet
-ping google.com /n 1 >nul
-if %errorlevel%==1 (
-	echo [%time%]: Having a stable internet conection is required for using the program. >> log.txt
-	exit
+cls
+echo:
+echo    ╔═══════════════════════════════════════════════╗
+echo    ║ Hammer Language Changer Installer       [▒▒▒] ║
+echo    ╟───────────────────────────────────────────────╢
+echo    ║ Attempting to connect to GitHub...            ║
+echo    ║ Please, wait...                               ║
+echo    ╚═══════════════════════════════════════════════╝
+ping github.com /n 1 >nul
+if %errorlevel% == 1 (
+	echo [%time%]: Unable to connect to GitHub. >> log.txt
+	call :error_no-internet
 )
 
+cls
 echo:
 echo    ╔═══════════════════════════════════════════════╗
 echo    ║ Hammer Language Changer Installer       [▒▒▒] ║
@@ -63,14 +88,16 @@ echo    ║ Checking for updates...                       ║
 echo    ║ Please, wait...                               ║
 echo    ╚═══════════════════════════════════════════════╝
 
+
 ::Download the git ver file, wich contents the latest version number. Then compare it with the current version. Horrid way of checking what's the latest version: Yes. Works: Yes.
 bitsadmin /transfer /download https://github.com/L89David/HammerLanguageChanger/blob/master/info/version.hlc?raw=true "%cd%\data\version.hlc" >nul
 set /p ver_git_number=<"%cd%\data\version.hlc"
 del "data\version.hlc" /f
 if "%ver_number%" LSS "%ver_git_number%" (
-	echo [%time%]: A newer version has been found. >> log.txt
+	echo [%time%]: A newer version has been found [%ver_git_number%] >> log.txt
+	%colors_info%
+	
 	cls
-	color f6
 	echo:
 	echo    ╔═══════════════════════════════════════════════╗
 	echo    ║ Hammer Language Changer Installer      ![▒▒▒] ║
@@ -81,7 +108,7 @@ if "%ver_number%" LSS "%ver_git_number%" (
 	echo    ╚═══════════════════════════════════════════════╝
 	echo     Current Compilation Nº: %ver_number%
 	echo     New Compilation Nº: %ver_git_number%
-	pause>nul
+	pause >nul
 	
 	cls
 	echo:
@@ -97,9 +124,6 @@ if "%ver_number%" LSS "%ver_git_number%" (
 ) else echo [%time%]: Using latest version. >> log.txt
 
 
-set total_files=4
-
-
 ::If any of the required files is missing, redownload all of them.
 if "%download_required%"=="1" (
 	echo [%time%]: Asset files are missing. Starting download process... >> log.txt
@@ -108,81 +132,33 @@ if "%download_required%"=="1" (
 	echo    ╔═══════════════════════════════════════════════╗
 	echo    ║ Hammer Language Changer Installer       [▒▒▒] ║
 	echo    ╟───────────────────────────────────────────────╢
-	echo    ║ Couldn't find asset files.                    ║
+	echo    ║ Couldn't find asset file/s.                   ║
 	echo    ║ Downloading required files... Please, wait... ║
 	echo    ╚═══════════════════════════════════════════════╝
 	echo     - Information:
 	echo:
 	
-	echo        [1/%total_files%] Downloading "dlls/p2_spanish.dll"...
-	bitsadmin /transfer /download https://github.com/L89David/HammerLanguageChanger/blob/master/dlls/p2_spanish.dll?raw=true "%cd%\data\p2_spanish.dll" >nul &&echo [%time%]: Downloaded "p2_spanish.dll". >> log.txt
-
-	echo        [2/%total_files%] Downloading "dlls/p2_french.dll"...
-	bitsadmin /transfer /download https://github.com/L89David/HammerLanguageChanger/blob/master/dlls/p2_french.dll?raw=true "%cd%\data\p2_french.dll" >nul &&echo [%time%]: Downloaded "p2_french.dll". >> log.txt
-
-	echo        [3/%total_files%] Downloading "dlls/p2_original.dll"...
-	bitsadmin /transfer /download https://github.com/L89David/HammerLanguageChanger/blob/master/dlls/p2_original.dll?raw=true "%cd%\data\p2_original.dll" >nul &&echo [%time%]: Downloaded "p2_original.dll". >> log.txt
+	call :db_download
 	
-	echo        [4/%total_files%] Downloading "dlls/info.txt"...
-	bitsadmin /transfer /download https://github.com/L89David/HammerLanguageChanger/blob/master/dlls/info.txt?raw=true "%cd%\data\dlls_info.txt" >nul &&echo [%time%]: Downloaded "dlls_info.txt". >> log.txt
-
 	echo ───────────────────────────────────────────────────────
 	echo        Download process finished. Initializing...
 	echo [%time%]: Download process finished. >> log.txt
 	timeout 3 /nobreak >nul
 )
 
+call :steam_find
 
 
 
 
-::This function will try to find where is Steam located, as you can see, his IQ it's not really high, and I'm pretty sure he will need help...
-::That's why I did this, if it can't find Steam, it'll just prompt you to put the Steam path. I hope people will read that YOU CAN'T PUT QUOTATION MARKS...
-:steam_find
-cls
-if exist "data/steam_path.hlc" set /p "steam_path="<data/steam_path.hlc
-if exist "%ProgramFiles(x86)%\steam\steam.exe" set "steam_path=%ProgramFiles(x86)%\Steam"
-if exist "%ProgramFiles%\Steam\steam.exe" set "steam_path=%ProgramFiles%\Steam"
 
-if not defined steam_path (
-	goto steam_find-fail
-) else goto step1
-
-
-:steam_find-fail
+:install_pick-game
 %mode%
-color fc
-echo:
-echo    ╔═══════════════════════════════════════════════╗
-echo    ║ Hammer Language Changer Installer      ![█▒▒] ║
-echo    ╟───────────────────────────────────────────────╢
-echo    ║ Unable to find the Steam path.                ║
-echo    ║ Please, drag the Steam folder to this program ║
-echo    ║ and press ENTER in order to continue          ║
-echo    ║ with the installation.                        ║
-echo    ║                                               ║
-echo    ║ Make sure you remove the quotation marks!     ║
-echo    ╚═══════════════════════════════════════════════╝
-echo:
-echo ───────────────────────────────────────────────────────
-set /p steam_path=
-if not defined steam_path echo [%time%]: -INPUT- Invalid value. >> log.txt &goto steam_find
-if not exist "%steam_path%\steam.exe" (
-	echo [%time%]: Couldn't find "steam.exe" at "%steam_path%. >> log.txt
-	exit
-)
-echo %steam_path%> "data\steam_path.hlc"
 
-
-
-
-
-:step1
-%mode%
-echo %steam_path%
 echo [%time%]: Steam located at: "%steam_path%" >> log.txt
+%colors_normal%
+
 cls
-color f1
 echo:
 echo    ╔═══════════════════════════════════════════════╗
 echo    ║ Hammer Language Changer Installer       [█▒▒] ║
@@ -198,13 +174,14 @@ echo    ╟───────────────────────
 echo    ║ A: Portal 2                                   ║
 echo    ╚═══════════════════════════════════════════════╝
 choice /c a /n >nul
-if %errorlevel%==1 set selected_game=p2
+if %errorlevel% == 1 set selected_game=p2
 
 
 
 
-:step2
+:install_pick-dll
 %mode%
+
 if %selected_game%==p2 (
 	if exist "%steam_path%\steamapps\common\Portal 2\bin" (
 		echo [%time%]: Selected game: Portal 2. >> log.txt
@@ -231,7 +208,7 @@ if exist "%bin_path%\HLC\language_selected.hlc" (
 
 
 cls
-color f1
+%colors_normal%
 echo:
 echo    ╔═══════════════════════════════════════════════╗
 echo    ║ Hammer Language Changer Installer       [██▒] ║
@@ -248,17 +225,18 @@ echo    ╟───────────────────────
 echo    ║ C: Original - Valve %state_original%                       ║
 echo    ╚═══════════════════════════════════════════════╝
 choice /c abc /n >nul
-if %errorlevel%==1 set selected_dll=spanish
-if %errorlevel%==2 set selected_dll=french
-if %errorlevel%==3 set selected_dll=original
+if %errorlevel% == 1 set selected_dll=spanish
+if %errorlevel% == 2 set selected_dll=french
+if %errorlevel% == 3 set selected_dll=original
 
 
 
 
 
-::This just works.
-:step3
+::Detecting if Hammer is running using an interesting way yikes.
+:install_copy
 %mode%
+
 cls
 echo:
 echo    ╔═══════════════════════════════════════════════╗
@@ -266,20 +244,132 @@ echo    ║ Hammer Language Changer Installer       [██▒] ║
 echo    ╟───────────────────────────────────────────────╢
 echo    ║ Please, wait...                               ║
 echo    ╚═══════════════════════════════════════════════╝
+
 tasklist |find "hammer.exe" >nul
-if %errorlevel%==0 (
-	echo [%time%]: Detected hammer running. >> log.txt
-	goto step3_hammer-open
-) else goto step3_proceed
+if %errorlevel% == 0 (
+	call :error_hammer-open
+) else (
+	::And there we go, the final step. Here we are copying the file (finally). As you can see, it also created that file in bin, wich will tell the Installer what language is being used rn.
+
+	if not exist "data\%file_prefix%_%selected_dll%.dll" echo [%time%]: Couldn't find "data\%file_prefix%_%selected_dll%.dll". >> log.txt &goto checksum
+	copy "data\%file_prefix%_%selected_dll%.dll" "%bin_path%\hammer_dll.dll" /y >nul &&echo [%time%]: %selected_dll% DLL has been copied succesfully as "%bin_path%\hammer_dll.dll". >> log.txt
+	if not exist "%bin_path%\HLC" mkdir "%bin_path%\HLC"
+	echo %selected_dll%> "%bin_path%\HLC\language_selected.hlc"
+	
+	goto install_end
+)
 
 
 
 
 
-:step3_hammer-open
+:install_end
 %mode%
+
+(
+	echo [%time%]: Installation finished succesfully.
+	echo:
+) >> log.txt
+
+%colors_correct%
 cls
-color fc
+echo:
+echo    ╔═══════════════════════════════════════════════╗
+echo    ║ Hammer Language Changer Installer      √[███] ║
+echo    ╟───────────────────────────────────────────────╢
+echo    ║ The DLL has been installed correctly!         ║
+echo    ║                                               ║
+echo    ║ A: Get back to the language selection menu.   ║
+echo    ║ B: Exit the program.                          ║
+echo    ╚═══════════════════════════════════════════════╝
+choice /c ab /n >nul
+if %errorlevel% == 1 goto install_pick-dll
+if %errorlevel% == 2 exit
+
+
+
+
+
+
+
+
+::=========== FUNCTIONS ============
+
+:db_download
+set /a total_files=4
+set /a current_file=1
+
+call :file_download p2_spanish.dll
+call :file_download p2_french.dll
+call :file_download p2_original.dll
+call :file_download info.txt
+
+exit /b
+
+
+:file_download
+echo        [%current_file%/%total_files%] Downloading "%1"...
+bitsadmin /transfer /download https://github.com/L89David/HammerLanguageChanger/blob/master/dlls/%1?raw=true "%cd%\data\%1" >nul &&echo [%time%]: Downloaded "%1". >> log.txt
+set /a current_file=%current_file%+1
+exit /b
+
+
+
+
+
+
+::This function will try to find where is Steam located.
+:steam_find
+cls
+if exist "data/steam_path.hlc" set /p "steam_path="<data/steam_path.hlc
+if exist "%ProgramFiles(x86)%\steam\steam.exe" set "steam_path=%ProgramFiles(x86)%\Steam"
+if exist "%ProgramFiles%\Steam\steam.exe" set "steam_path=%ProgramFiles%\Steam"
+
+if not defined steam_path (
+	if not defined steam_find-log_shown (
+		echo [%time%]: Couldn't find the Steam path automatically. >> log.txt
+		set steam_find-log_shown=1
+	)
+	call :error_steam-find_fail
+) else goto install_pick-game
+
+
+
+
+
+:error_no-internet
+cls
+%colors_error%
+
+echo:
+echo    ╔═══════════════════════════════════════════════╗
+echo    ║ Hammer Language Changer Installer       [▒▒▒] ║
+echo    ╟───────────────────────────────────────────────╢
+echo    ║ Unable to connect to GitHub.                  ║
+echo    ║ Please, check your internet conection, or     ║
+echo    ║ check the GitHub server status.               ║
+echo    ╚═══════════════════════════════════════════════╝
+echo:
+echo    ╔═══════════════════════════════════════════════╗
+echo    ║ A: Check GitHub status.                       ║
+echo    ║ B: Retry to connect.                          ║
+echo    ║ C: Exit.                                      ║
+echo    ╚═══════════════════════════════════════════════╝
+choice /c abc /n >nul
+if %errorlevel% == 1 start "" "https://www.githubstatus.com/"
+if %errorlevel% == 2 goto checksum
+if %errorlevel% == 3 exit
+goto error_no-internet
+
+
+
+
+:error_hammer-open
+echo [%time%]: Detected hammer running. >> log.txt
+%mode%
+%colors_error%
+
+cls
 echo:
 echo    ╔═══════════════════════════════════════════════╗
 echo    ║ Hammer Language Changer Installer      ![██▒] ║
@@ -294,7 +384,7 @@ echo    ╔═══════════════════════
 echo    ║ P: Continue with the installation.            ║
 echo    ╚═══════════════════════════════════════════════╝
 choice /c p /n >nul
-if %errorlevel%==1 (
+if %errorlevel% == 1 (
 	cls
 	echo:
 	echo    ╔═══════════════════════════════════════════════╗
@@ -306,40 +396,51 @@ if %errorlevel%==1 (
 	taskkill /im hammer.exe /f >nul
 	echo [%time%]: Trying to close "hammer.exe" >> "log.txt"
 	timeout 2 /nobreak >nul
-	goto step3_proceed
+	goto install_copy
 )
 
 
-::And there we go, the final step. Here we are copying the file (finally). As you can see, it also created that file in bin, wich will tell the Installer what language is being used rn.
-:step3_proceed
-if not exist "data\%file_prefix%_%selected_dll%.dll" echo [%time%]: Couldn't find "data\%file_prefix%_%selected_dll%.dll". >> log.txt &exit
-copy "data\%file_prefix%_%selected_dll%.dll" "%bin_path%\hammer_dll.dll" /y >nul &&echo [%time%]: %selected_dll% DLL has been copied succesfully as "%bin_path%\hammer_dll.dll". >> log.txt
-if not exist "%bin_path%\HLC" mkdir "%bin_path%\HLC"
-echo %selected_dll%> "%bin_path%\HLC\language_selected.hlc"
 
 
 
-
-
-:finish
+:error_steam-find_fail
 %mode%
-(
-	echo [%time%]: Installation finished succesfully.
-	echo:
-) >> log.txt
+%colors_error%
 
-color f2
-cls
 echo:
 echo    ╔═══════════════════════════════════════════════╗
-echo    ║ Hammer Language Changer Installer      √[███] ║
+echo    ║ Hammer Language Changer Installer      ![█▒▒] ║
 echo    ╟───────────────────────────────────────────────╢
-echo    ║ The DLL has been installed correctly!         ║
+echo    ║ Unable to find the Steam path.                ║
+echo    ║ Please, drag the Steam folder to this program ║
+echo    ║ and press ENTER in order to continue          ║
+echo    ║ with the installation.                        ║
 echo    ║                                               ║
-echo    ║ A: Get back to the language selection menu.   ║
-echo    ║ B: Exit the program.                          ║
+echo    ║ Make sure you remove the quotation marks!     ║
 echo    ╚═══════════════════════════════════════════════╝
-choice /c ab /n >nul
-if %errorlevel%==1 goto step2
-if %errorlevel%==2 exit
-goto step2
+echo:
+echo ───────────────────────────────────────────────────────
+set /p steam_path=
+if not defined steam_path (
+	echo [%time%]: -INPUT- Not defined. >> log.txt
+	set steam_path=
+	goto steam_find
+)
+
+echo %steam_path% > "%temp%\HLC\path.tmp"
+findstr """ "%temp%\HLC\path.tmp"
+cls
+if %errorlevel%==0 (
+	echo [%time%]: -INPUT- Added quotation marks. >> log.txt
+	set steam_path=
+	goto steam_find
+)
+
+if not exist "%steam_path%\steam.exe" (
+	echo [%time%]: Couldn't find "steam.exe" in "%steam_path%". >> log.txt
+	set steam_path=
+	goto steam_find
+)
+
+echo %steam_path%> "data\steam_path.hlc"
+goto steam_find
