@@ -2,6 +2,11 @@ DLLS Info:
 ---------------------------------------------------
 
 	- Portal 2:
-		Spanish (1.2.0) - DarviL
+		Spanish (1.3.0) - DarviL
 		French (1.0.0) - Orinji Neko
+		Original - Valve
+		
+		
+	- Counter Strike: Global Offensive:
+		Spanish (1.3.0) - DarviL
 		Original - Valve

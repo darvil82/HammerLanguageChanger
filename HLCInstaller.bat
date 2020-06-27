@@ -55,6 +55,8 @@ if not exist "%temp%\HLC" mkdir "%temp%\HLC"
 if not exist "data/p2_spanish.dll" set download_required=1
 if not exist "data/p2_original.dll" set download_required=1
 if not exist "data/p2_french.dll" set download_required=1
+if not exist "data/csgo_spanish.dll" set download_required=1
+if not exist "data/csgo_original.dll" set download_required=1
 
 if exist "updater.bat" (
 	del "updater.bat" /f /q
@@ -172,9 +174,11 @@ echo    ╔═══════════════════════
 echo    ║ Available Games:                              ║
 echo    ╟───────────────────────────────────────────────╢
 echo    ║ A: Portal 2                                   ║
+echo    ║ B: Counter Strike: Global Offensive           ║
 echo    ╚═══════════════════════════════════════════════╝
-choice /c a /n >nul
+choice /c ab /n >nul
 if %errorlevel% == 1 set selected_game=p2
+if %errorlevel% == 2 set selected_game=csgo
 
 
 
@@ -187,6 +191,13 @@ if %selected_game%==p2 (
 		echo [%time%]: Selected game: Portal 2. >> log.txt
 		set "bin_path=%steam_path%\steamapps\common\Portal 2\bin"
 		set file_prefix=p2
+	) else echo [%time%]: Couldn't locate bin folder. >> log.txt &exit
+)
+if %selected_game%==csgo (
+	if exist "%steam_path%\steamapps\common\Counter-Strike Global Offensive\bin" (
+		echo [%time%]: Selected game: Counter Strike: Global Offensive. >> log.txt
+		set "bin_path=%steam_path%\steamapps\common\Counter-Strike Global Offensive\bin"
+		set file_prefix=csgo
 	) else echo [%time%]: Couldn't locate bin folder. >> log.txt &exit
 )
 
@@ -214,6 +225,7 @@ echo    ╔═══════════════════════
 echo    ║ Hammer Language Changer Installer       [██▒] ║
 echo    ╟───────────────────────────────────────────────╢
 if %selected_game%==p2 echo    ║ Game selected: Portal 2                       ║
+if %selected_game%==csgo echo    ║ Game selected: Counter Strike: Global Offe... ║
 echo    ╚═══════════════════════════════════════════════╝
 echo:
 echo    ╔═══════════════════════════════════════════════╗
@@ -236,7 +248,6 @@ if %errorlevel% == 3 set selected_dll=original
 ::Detecting if Hammer is running using an interesting way yikes.
 :install_copy
 %mode%
-
 cls
 echo:
 echo    ╔═══════════════════════════════════════════════╗
@@ -250,7 +261,6 @@ if %errorlevel% == 0 (
 	call :error_hammer-open
 ) else (
 	::And there we go, the final step. Here we are copying the file (finally). As you can see, it also created that file in bin, wich will tell the Installer what language is being used rn.
-
 	if not exist "data\%file_prefix%_%selected_dll%.dll" echo [%time%]: Couldn't find "data\%file_prefix%_%selected_dll%.dll". >> log.txt &goto checksum
 	copy "data\%file_prefix%_%selected_dll%.dll" "%bin_path%\hammer_dll.dll" /y >nul &&echo [%time%]: %selected_dll% DLL has been copied succesfully as "%bin_path%\hammer_dll.dll". >> log.txt
 	if not exist "%bin_path%\HLC" mkdir "%bin_path%\HLC"
@@ -296,12 +306,14 @@ if %errorlevel% == 2 exit
 ::=========== FUNCTIONS ============
 
 :db_download
-set /a total_files=4
+set /a total_files=6
 set /a current_file=1
 
 call :file_download p2_spanish.dll
 call :file_download p2_french.dll
 call :file_download p2_original.dll
+call :file_download csgo_spanish.dll
+call :file_download csgo_original.dll
 call :file_download info.txt
 
 exit /b
@@ -396,6 +408,7 @@ if %errorlevel% == 1 (
 	taskkill /im hammer.exe /f >nul
 	echo [%time%]: Trying to close "hammer.exe" >> "log.txt"
 	timeout 2 /nobreak >nul
+	%colors_normal%
 	goto install_copy
 )
 
