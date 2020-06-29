@@ -9,9 +9,6 @@
 
 ***A Valve Hammer Editor modification to change it's language.***
 
-Currently only works for **Portal 2 SDK**, more games could be added in a future.  
-Sadly, it's not possible to translate the entire program, because some strings are inside the `.exe`, wich cannot be modified. But almost the entire thing can be properly translated.
-
 Would you like to translate Hammer to to your language? Help us to do so!
 
 ### **[View more info, documentation, and help.](https://github.com/L89David/HammerLanguageChanger/wiki/Home)**  
