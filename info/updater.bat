@@ -10,13 +10,15 @@ cls
 
 
 %mode%
+echo:
 echo    ╔═══════════════════════════════════════════════╗
-echo    ║ Hammer Language Changer Updater               ║
+echo    ║ Hammer Language Changer Updater         [▒▒▒] ║
 echo    ╟───────────────────────────────────────────────╢
-echo    ║ Downloading latest version.                   ║
+echo    ║ Downloading latest version. The installation  ║
+echo    ║ will finish automatically.                    ║
 echo    ║ Please, wait...                               ║
 echo    ╚═══════════════════════════════════════════════╝
-bitsadmin /transfer /download https://github.com/L89David/HammerLanguageChanger/blob/master/HLCInstaller.bat?raw=true %1/HLCInstaller.bat >nul
-rd "%cd%/data" /s /q
+bitsadmin /transfer /download https://github.com/L89David/HammerLanguageChanger/blob/master/HLCInstaller.bat?raw=true "%1/HLCInstaller.bat" >nul
+if exist "%1/data" rd "%1/data" /s /q
 start "" "HLCInstaller.bat"
 exit
