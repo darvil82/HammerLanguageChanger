@@ -234,14 +234,12 @@ echo    ╔═══════════════════════
 echo    ║ Available languages:                          ║
 echo    ╟───────────────────────────────────────────────╢
 echo    ║ A: Spanish - DarviL %state_es%                       ║
-echo    ║ B: French - Orinji Neko %state_fr%                   ║
 echo    ╟───────────────────────────────────────────────╢
-echo    ║ C: Original - Valve %state_original%                       ║
+echo    ║ B: Original - Valve %state_original%                       ║
 echo    ╚═══════════════════════════════════════════════╝
 choice /c abc /n >nul
 if %errorlevel% == 1 set selected_dll=spanish
-if %errorlevel% == 2 set selected_dll=french
-if %errorlevel% == 3 set selected_dll=original
+if %errorlevel% == 2 set selected_dll=original
 
 
 
@@ -308,11 +306,10 @@ if %errorlevel% == 2 exit
 ::=========== FUNCTIONS ============
 
 :db_download
-set /a total_files=6
+set /a total_files=5
 set /a current_file=0
 
 call :file_download p2_spanish.dll
-call :file_download p2_french.dll
 call :file_download p2_original.dll
 call :file_download csgo_spanish.dll
 call :file_download csgo_original.dll
