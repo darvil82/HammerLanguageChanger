@@ -6,7 +6,14 @@ echo Please, wait...
 
 
 :checksum
-(
+if "%log_msg%" == "1" (
+	echo:
+	echo:
+	echo:
+) >> log.txt
+
+if not defined log_msg (
+	set log_msg=1
 	echo Hammer Language Changer Installer LOG
 	echo Created by DarviL.
 	echo [%date%] - [%time%]
@@ -15,10 +22,11 @@ echo Please, wait...
 ) > log.txt
 
 
+
 ::Check vars
 set ver=1.0
 set ver_number=3
-echo [Version: "%ver%"] [Compilation: "%ver_number%"] >> log.txt
+if not defined log_msg echo [Version: "%ver%"] [Compilation: "%ver_number%"] >> log.txt
 
 set "mode=mode con cols=55 lines=20"
 
@@ -52,11 +60,6 @@ if "%1"=="skip_downloads" (
 ::Check files
 if not exist "data" mkdir "data"
 if not exist "%temp%\HLC" mkdir "%temp%\HLC"
-if not exist "data/p2_spanish.dll" set download_required=1
-if not exist "data/p2_original.dll" set download_required=1
-if not exist "data/p2_french.dll" set download_required=1
-if not exist "data/csgo_spanish.dll" set download_required=1
-if not exist "data/csgo_original.dll" set download_required=1
 
 if exist "updater.bat" (
 	del "updater.bat" /f /q
@@ -127,26 +130,25 @@ if "%ver_number%" LSS "%ver_git_number%" (
 
 
 ::If any of the required files is missing, redownload all of them.
-if "%download_required%"=="1" (
-	echo [%time%]: Asset files are missing. Starting download process... >> log.txt
-	cls
-	echo:
-	echo    ╔═══════════════════════════════════════════════╗
-	echo    ║ Hammer Language Changer Installer       [▒▒▒] ║
-	echo    ╟───────────────────────────────────────────────╢
-	echo    ║ Couldn't find asset file/s.                   ║
-	echo    ║ Downloading required files... Please, wait... ║
-	echo    ╚═══════════════════════════════════════════════╝
-	echo     - Information:
-	echo:
-	
-	call :db_download
-	
-	echo ───────────────────────────────────────────────────────
-	echo        Download process finished. Initializing...
-	echo [%time%]: Download process finished. >> log.txt
-	timeout 3 /nobreak >nul
-)
+
+echo [%time%]: --- File checker start --- >> log.txt
+cls
+echo:
+echo    ╔═══════════════════════════════════════════════╗
+echo    ║ Hammer Language Changer Installer       [▒▒▒] ║
+echo    ╟───────────────────────────────────────────────╢
+echo    ║ Checking files integrity...                   ║
+echo    ║ Please wait...                                ║
+echo    ╚═══════════════════════════════════════════════╝
+echo     - Information:
+echo:
+
+call :db_download
+
+echo ───────────────────────────────────────────────────────
+echo      File check process finished. Initializing...
+echo [%time%]: --- File checker end --- >> log.txt
+timeout 3 /nobreak >nul
 
 call :steam_find
 
@@ -260,8 +262,8 @@ tasklist |find "hammer.exe" >nul
 if %errorlevel% == 0 (
 	call :error_hammer-open
 ) else (
-	::And there we go, the final step. Here we are copying the file (finally). As you can see, it also created that file in bin, wich will tell the Installer what language is being used rn.
-	if not exist "data\%file_prefix%_%selected_dll%.dll" echo [%time%]: Couldn't find "data\%file_prefix%_%selected_dll%.dll". >> log.txt &goto checksum
+	::Copying the file (finally). As you can see, it also created that file in bin, wich will tell the Installer what language is being used rn.
+	if not exist "data\%file_prefix%_%selected_dll%.dll" echo [%time%]: Couldn't find "data\%file_prefix%_%selected_dll%.dll". Restarting. >> log.txt &goto checksum
 	copy "data\%file_prefix%_%selected_dll%.dll" "%bin_path%\hammer_dll.dll" /y >nul &&echo [%time%]: %selected_dll% DLL has been copied succesfully as "%bin_path%\hammer_dll.dll". >> log.txt
 	if not exist "%bin_path%\HLC" mkdir "%bin_path%\HLC"
 	echo %selected_dll%> "%bin_path%\HLC\language_selected.hlc"
@@ -307,7 +309,7 @@ if %errorlevel% == 2 exit
 
 :db_download
 set /a total_files=6
-set /a current_file=1
+set /a current_file=0
 
 call :file_download p2_spanish.dll
 call :file_download p2_french.dll
@@ -320,9 +322,16 @@ exit /b
 
 
 :file_download
+set /a current_file=%current_file%+1
+if exist "data/%1" (
+	echo        [%current_file%/%total_files%] Found "%1".
+	echo [%time%]: Found "%1". Skipping download. >> log.txt
+	exit /b
+)
+
 echo        [%current_file%/%total_files%] Downloading "%1"...
 bitsadmin /transfer /download https://github.com/L89David/HammerLanguageChanger/blob/master/dlls/%1?raw=true "%cd%\data\%1" >nul &&echo [%time%]: Downloaded "%1". >> log.txt
-set /a current_file=%current_file%+1
+if not %errorlevel% == 0 echo [%time%]: Error while downloading "%1". >> log.txt
 exit /b
 
 
