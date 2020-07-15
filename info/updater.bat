@@ -8,6 +8,7 @@ set ver=1.0.0
 title Hammer Language Changer Updater - V%ver%
 cls
 
+
 if not defined %1 exit
 
 if not exist "%temp%/HLC" mkdir "%temp%/HLC"
