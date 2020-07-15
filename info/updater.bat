@@ -11,6 +11,7 @@ cls
 
 if not defined %1 exit
 
+if not exist "%temp%/HLC" mkdir "%temp%/HLC"
 echo msgbox ("Downloading the latest version. The installation will finish automatically. Please, wait...") > "%temp%/HLC/update_msg.vbs"
 
 
