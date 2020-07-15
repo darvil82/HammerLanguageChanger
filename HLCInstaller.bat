@@ -24,11 +24,12 @@ if not defined log_msg (
 
 
 ::Check vars
-set ver=1.0
-set ver_number=3
+set ver=1.1
+set ver_number=4
 echo [Version: "%ver%"] [Compilation: "%ver_number%"] >> log.txt
 
 set "mode=mode con cols=55 lines=20"
+set "mode2=mode con cols=55 lines=30"
 
 set colors_normal=color f1
 set colors_error=color fc
@@ -40,16 +41,11 @@ title Hammer Language Changer Installer - V%ver%
 %colors_normal%
 
 
+
 ::Check parameters
 if "%1"=="force_update" (
 	echo [%time%]: Forcing the program to update... >> log.txt
 	set ver_number=0
-)
-if "%1"=="del_data" (
-	if exist "data" (
-		rd "data" /s /q
-		echo [%time%]: Removed data folder succesfully. >> log.txt
-	) else echo [%time%]: "data" folder does not exist. Unable to delete the files. >> log.txt
 )
 if "%1"=="skip_downloads" (
 	set skip_downloads=1
@@ -57,12 +53,17 @@ if "%1"=="skip_downloads" (
 )
 
 
-::Check files
-if not exist "data" mkdir "data"
-if not exist "%temp%\HLC" mkdir "%temp%\HLC"
 
-if exist "updater.bat" (
-	del "updater.bat" /f /q
+::Check files
+if not exist "%temp%\HLC" (
+	mkdir "%temp%\HLC"
+) else (
+	rd "%temp%\HLC" /s /q
+	mkdir "%temp%\HLC"
+)
+
+if exist "%temp%\HLC\updater.bat" (
+	del "%temp%\HLC\updater.bat" /f /q
 	echo [%time%]: Program updated succesfully! >> log.txt
 )
 
@@ -95,9 +96,9 @@ echo    ╚═══════════════════════
 
 
 ::Download the git ver file, wich contents the latest version number. Then compare it with the current version. Horrid way of checking what's the latest version: Yes. Works: Yes.
-bitsadmin /transfer /download https://github.com/L89David/HammerLanguageChanger/blob/master/info/version.hlc?raw=true "%cd%\data\version.hlc" >nul
-set /p ver_git_number=<"%cd%\data\version.hlc"
-del "data\version.hlc" /f
+bitsadmin /transfer /download https://github.com/L89David/HammerLanguageChanger/blob/master/info/version.hlc?raw=true "%temp%\HLC\version.hlc" >nul
+set /p ver_git_number=<"%temp%\HLC\version.hlc"
+del "%temp%\HLC\version.hlc" /f
 if "%ver_number%" LSS "%ver_git_number%" (
 	echo [%time%]: A newer version has been found [%ver_git_number%] >> log.txt
 	%colors_info%
@@ -123,32 +124,11 @@ if "%ver_number%" LSS "%ver_git_number%" (
 	echo    ║ Initializing update process...                ║
 	echo    ║ Please, wait...                               ║
 	echo    ╚═══════════════════════════════════════════════╝
-	bitsadmin /transfer /download https://github.com/L89David/HammerLanguageChanger/blob/master/info/updater.bat?raw=true "%cd%\updater.bat" >nul
-	start "" updater.bat "%cd%"
+	bitsadmin /transfer /download https://github.com/L89David/HammerLanguageChanger/blob/master/info/updater.bat?raw=true "%temp%\HLC\updater.bat" >nul
+	start "" %temp%\HLC\updater.bat "%cd%"
 	exit
 ) else echo [%time%]: Using latest version. >> log.txt
 
-
-::If any of the required files is missing, redownload all of them.
-
-echo [%time%]: --- File checker start --- >> log.txt
-cls
-echo:
-echo    ╔═══════════════════════════════════════════════╗
-echo    ║ Hammer Language Changer Installer       [▒▒▒] ║
-echo    ╟───────────────────────────────────────────────╢
-echo    ║ Checking files integrity...                   ║
-echo    ║ Please wait...                                ║
-echo    ╚═══════════════════════════════════════════════╝
-echo     - Information:
-echo:
-
-call :db_download
-
-echo ───────────────────────────────────────────────────────
-echo      File check process finished. Initializing...
-echo [%time%]: --- File checker end --- >> log.txt
-timeout 3 /nobreak >nul
 
 call :steam_find
 
@@ -157,9 +137,7 @@ call :steam_find
 
 
 :install_pick-game
-%mode%
-
-echo [%time%]: Steam located at: "%steam_path%" >> log.txt
+%mode2%
 %colors_normal%
 
 cls
@@ -168,8 +146,8 @@ echo    ╔═══════════════════════
 echo    ║ Hammer Language Changer Installer       [█▒▒] ║
 echo    ╟───────────────────────────────────────────────╢
 echo    ║ Welcome to the Hammer Language installation   ║
-echo    ║ setup! In wich game you would like to use     ║
-echo    ║ a translation for Hammer?                     ║
+echo    ║ setup! In wich game you would like to change  ║
+echo    ║ the Hammer DLL?                               ║
 echo    ╚═══════════════════════════════════════════════╝
 echo:
 echo    ╔═══════════════════════════════════════════════╗
@@ -178,9 +156,25 @@ echo    ╟───────────────────────
 echo    ║ A: Portal 2                                   ║
 echo    ║ B: Counter Strike: Global Offensive           ║
 echo    ╚═══════════════════════════════════════════════╝
-choice /c ab /n >nul
+echo:
+echo ―――――――――――――――――――――――――――――――――――――――――――――――――――――――
+echo:
+echo    ┌───────────────────────────────────────────────┐
+echo    │ Other:                                        │
+echo    ├───────────────────────────────────────────────┤
+echo    │ R: Report an Issue                            │
+echo    │ H: Help                                       │
+echo    │ U: Contribute                                 │
+echo    │ G: GitHub                                     │
+echo    └───────────────────────────────────────────────┘
+choice /c abrhug /n >nul
 if %errorlevel% == 1 set selected_game=p2
 if %errorlevel% == 2 set selected_game=csgo
+
+if %errorlevel% == 3 start "" "https://github.com/L89David/HammerLanguageChanger/issues/new" &&goto install_pick-game
+if %errorlevel% == 4 start "" "https://github.com/L89David/HammerLanguageChanger/wiki/Installation" &&goto install_pick-game
+if %errorlevel% == 5 start "" "https://github.com/L89David/HammerLanguageChanger/wiki/Contributing" &&goto install_pick-game
+if %errorlevel% == 6 start "" "https://github.com/L89David/HammerLanguageChanger" &&goto install_pick-game
 
 
 
@@ -231,7 +225,7 @@ if %selected_game%==csgo echo    ║ Game selected: Counter Strike: Global Offe.
 echo    ╚═══════════════════════════════════════════════╝
 echo:
 echo    ╔═══════════════════════════════════════════════╗
-echo    ║ Available languages:                          ║
+echo    ║ Available DLL's:                              ║
 echo    ╟───────────────────────────────────────────────╢
 echo    ║ A: Spanish - DarviL %state_es%                       ║
 echo    ╟───────────────────────────────────────────────╢
@@ -253,16 +247,21 @@ echo:
 echo    ╔═══════════════════════════════════════════════╗
 echo    ║ Hammer Language Changer Installer       [██▒] ║
 echo    ╟───────────────────────────────────────────────╢
-echo    ║ Please, wait...                               ║
+echo    ║ Downloading and copying DLL...                ║
+echo    ║ Please wait...                                ║
 echo    ╚═══════════════════════════════════════════════╝
+
+if not exist "%temp%\HLC\%file_prefix%_%selected_dll%.dll" (
+	call :file_download %file_prefix%_%selected_dll%.dll
+) else echo [%time%]: Found "%file_prefix%_%selected_dll%.dll". No need to redownload it. >> log.txt
 
 tasklist |find "hammer.exe" >nul
 if %errorlevel% == 0 (
 	call :error_hammer-open
 ) else (
 	::Copying the file (finally). As you can see, it also created that file in bin, wich will tell the Installer what language is being used rn.
-	if not exist "data\%file_prefix%_%selected_dll%.dll" echo [%time%]: Couldn't find "data\%file_prefix%_%selected_dll%.dll". Restarting. >> log.txt &goto checksum
-	copy "data\%file_prefix%_%selected_dll%.dll" "%bin_path%\hammer_dll.dll" /y >nul &&echo [%time%]: %selected_dll% DLL has been copied succesfully as "%bin_path%\hammer_dll.dll". >> log.txt
+	if not exist "%temp%\HLC\%file_prefix%_%selected_dll%.dll" echo [%time%]: Couldn't find "%temp%\HLC\%file_prefix%_%selected_dll%.dll". Restarting. >> log.txt &goto checksum
+	copy "%temp%\HLC\%file_prefix%_%selected_dll%.dll" "%bin_path%\hammer_dll.dll" /y >nul &&echo [%time%]: %selected_dll% DLL has been copied succesfully as "%bin_path%\hammer_dll.dll". >> log.txt
 	if not exist "%bin_path%\HLC" mkdir "%bin_path%\HLC"
 	echo %selected_dll%> "%bin_path%\HLC\language_selected.hlc"
 	
@@ -305,43 +304,22 @@ if %errorlevel% == 2 exit
 
 ::=========== FUNCTIONS ============
 
-:db_download
-set /a total_files=5
-set /a current_file=0
-
-call :file_download p2_spanish.dll
-call :file_download p2_original.dll
-call :file_download csgo_spanish.dll
-call :file_download csgo_original.dll
-call :file_download info.txt
-
-exit /b
-
-
 :file_download
-set /a current_file=%current_file%+1
-if exist "data/%1" (
-	echo        [%current_file%/%total_files%] Found "%1".
-	echo [%time%]: Found "%1". Skipping download. >> log.txt
-	exit /b
-)
-
-echo        [%current_file%/%total_files%] Downloading "%1"...
-bitsadmin /transfer /download https://github.com/L89David/HammerLanguageChanger/blob/master/dlls/%1?raw=true "%cd%\data\%1" >nul &&echo [%time%]: Downloaded "%1". >> log.txt
+if "%skip_downloads%" == "1" exit /b
+echo [%time%]: Downloading "%1"... >> log.txt
+bitsadmin /transfer /download https://github.com/L89David/HammerLanguageChanger/blob/master/dlls/%1?raw=true "%temp%\HLC\%1" >nul &&echo [%time%]: Downloaded "%1". >> log.txt
 if not %errorlevel% == 0 echo [%time%]: Error while downloading "%1". >> log.txt
 exit /b
-
-
-
 
 
 
 ::This function will try to find where is Steam located.
 :steam_find
 cls
-if exist "data/steam_path.hlc" set /p "steam_path="<data/steam_path.hlc
+if exist "%temp%\HLC\steam_path.hlc" set /p "steam_path="<%temp%\HLC\steam_path.hlc
 if exist "%ProgramFiles(x86)%\steam\steam.exe" set "steam_path=%ProgramFiles(x86)%\Steam"
 if exist "%ProgramFiles%\Steam\steam.exe" set "steam_path=%ProgramFiles%\Steam"
+
 
 if not defined steam_path (
 	if not defined steam_find-log_shown (
@@ -349,8 +327,10 @@ if not defined steam_path (
 		set steam_find-log_shown=1
 	)
 	call :error_steam-find_fail
-) else goto install_pick-game
-
+) else (
+	echo [%time%]: Steam located at: "%steam_path%" >> log.txt
+	goto install_pick-game
+)
 
 
 
@@ -423,6 +403,7 @@ if %errorlevel% == 1 (
 
 
 :error_steam-find_fail
+cls
 %mode%
 %colors_error%
 
@@ -439,6 +420,7 @@ echo    ║ Make sure you remove the quotation marks!     ║
 echo    ╚═══════════════════════════════════════════════╝
 echo:
 echo ───────────────────────────────────────────────────────
+
 set /p steam_path=
 if not defined steam_path (
 	echo [%time%]: -INPUT- Not defined. >> log.txt
@@ -447,8 +429,8 @@ if not defined steam_path (
 )
 
 echo %steam_path% > "%temp%\HLC\path.tmp"
-findstr """ "%temp%\HLC\path.tmp"
-cls
+findstr "\"" %temp%\HLC\path.tmp
+
 if %errorlevel%==0 (
 	echo [%time%]: -INPUT- Added quotation marks. >> log.txt
 	set steam_path=
@@ -461,5 +443,5 @@ if not exist "%steam_path%\steam.exe" (
 	goto steam_find
 )
 
-echo %steam_path%> "data\steam_path.hlc"
+echo %steam_path%> "%temp%\HLC\steam_path.hlc"
 goto steam_find
