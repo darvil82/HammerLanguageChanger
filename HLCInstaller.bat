@@ -117,7 +117,7 @@ if "%ver_number%" LSS "%ver_git_number%" (
 	echo     New Build Nº: %ver_git_number%
 	pause>nul
 	start "" "https://github.com/L89David/HammerLanguageChanger/releases"
-	if exists "%temp%\HLC" rd "%temp%\HLC"
+	if exist "%temp%\HLC" rd "%temp%\HLC"
 	exit
 ) else echo [%time%]: Using latest version. >> log.txt
 
