@@ -51,6 +51,12 @@ if "%1"=="skip_downloads" (
 	set skip_downloads=1
 	echo [%time%]: Skipping all the possible downloads. >> log.txt
 )
+if "%1"=="download" (
+	echo Downloading "%2" to "%cd%"...
+	call :file_download %2
+	copy "%temp%\HLC\%2" "%cd%"
+	exit
+)
 
 
 
