@@ -24,8 +24,8 @@ if not defined log_msg (
 
 
 ::Check vars
-set ver=1.1
-set ver_number=4
+set ver=1.2
+set ver_number=5
 echo [Version: "%ver%"] [Compilation: "%ver_number%"] >> log.txt
 
 set "mode=mode con cols=55 lines=20"
@@ -60,11 +60,6 @@ if not exist "%temp%\HLC" (
 ) else (
 	rd "%temp%\HLC" /s /q
 	mkdir "%temp%\HLC"
-)
-
-if exist "%temp%\HLC\updater.bat" (
-	del "%temp%\HLC\updater.bat" /f /q
-	echo [%time%]: Program updated succesfully! >> log.txt
 )
 
 if "%skip_downloads%" == "1" goto steam_find
@@ -109,23 +104,14 @@ if "%ver_number%" LSS "%ver_git_number%" (
 	echo    ║ Hammer Language Changer Installer      ![▒▒▒] ║
 	echo    ╟───────────────────────────────────────────────╢
 	echo    ║ There is a newer version available.           ║
-	echo    ║ Press any key to install the new version      ║
-	echo    ║ automatically.                                ║
+	echo    ║ Press any key to open the releases page       ║
+	echo    ║ to download the latest update.                ║
 	echo    ╚═══════════════════════════════════════════════╝
-	echo     Current Compilation Nº: %ver_number%
-	echo     New Compilation Nº: %ver_git_number%
-	pause >nul
-	
-	cls
-	echo:
-	echo    ╔═══════════════════════════════════════════════╗
-	echo    ║ Hammer Language Changer Installer      ![▒▒▒] ║
-	echo    ╟───────────────────────────────────────────────╢
-	echo    ║ Initializing update process...                ║
-	echo    ║ Please, wait...                               ║
-	echo    ╚═══════════════════════════════════════════════╝
-	bitsadmin /transfer /download https://github.com/L89David/HammerLanguageChanger/blob/master/info/updater.bat?raw=true "%temp%\HLC\updater.bat" >nul
-	start "" %temp%\HLC\updater.bat "%cd%"
+	echo     Current Build Nº: %ver_number%
+	echo     New Build Nº: %ver_git_number%
+	pause>nul
+	start "" "https://github.com/L89David/HammerLanguageChanger/releases"
+	if exists "%temp%\HLC" rd "%temp%\HLC"
 	exit
 ) else echo [%time%]: Using latest version. >> log.txt
 
