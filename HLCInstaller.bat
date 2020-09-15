@@ -4,7 +4,6 @@
 chcp 65001 >nul
 echo Please, wait...
 
-
 :checksum
 if "%log_msg%" == "1" (
 	echo:
@@ -24,8 +23,8 @@ if not defined log_msg (
 
 
 ::Check vars
-set ver=1.2
-set ver_number=5
+set ver=1.3
+set ver_number=6
 echo [Version: "%ver%"] [Compilation: "%ver_number%"] >> log.txt
 
 set "mode=mode con cols=55 lines=20"
@@ -41,7 +40,6 @@ title Hammer Language Changer Installer - V%ver%
 %colors_normal%
 
 
-
 ::Check parameters
 if "%1"=="force_update" (
 	echo [%time%]: Forcing the program to update... >> log.txt
@@ -54,10 +52,14 @@ if "%1"=="skip_downloads" (
 if "%1"=="download" (
 	echo Downloading "%2" to "%cd%"...
 	call :file_download %2
-	copy "%temp%\HLC\%2" "%cd%"
+	if exist "%temp%\HLC\%2" (
+		copy "%temp%\HLC\%2" "%cd%" >nul
+		call :show_msg "Downloaded '%2' to '%cd%'." 64
+	) else (
+		call :show_msg "Couldn't download '%2'." 16
+	)
 	exit
 )
-
 
 
 ::Check files
@@ -71,7 +73,7 @@ if not exist "%temp%\HLC" (
 if "%skip_downloads%" == "1" goto steam_find
 
 
-::Check if user it's connected to internet
+::Check if user is connected to internet
 cls
 echo:
 echo    ╔═══════════════════════════════════════════════╗
@@ -94,7 +96,7 @@ echo    ╟───────────────────────
 echo    ║ Checking for updates...                       ║
 echo    ║ Please, wait...                               ║
 echo    ╚═══════════════════════════════════════════════╝
-
+echo [%time%]: Checking for updates... >> log.txt
 
 ::Download the git ver file, wich contents the latest version number. Then compare it with the current version. Horrid way of checking what's the latest version: Yes. Works: Yes.
 bitsadmin /transfer /download https://github.com/L89David/HammerLanguageChanger/blob/master/info/version.hlc?raw=true "%temp%\HLC\version.hlc" >nul
@@ -179,14 +181,20 @@ if %selected_game%==p2 (
 		echo [%time%]: Selected game: Portal 2. >> log.txt
 		set "bin_path=%steam_path%\steamapps\common\Portal 2\bin"
 		set file_prefix=p2
-	) else echo [%time%]: Couldn't locate bin folder. >> log.txt &exit
+	) else (
+		call :show_msg "Couldn't locate the 'bin' folder inside '%steam_path%\steamapps\common\Portal 2'." 16
+		echo [%time%]: Couldn't locate bin folder. >> log.txt &exit
+	)
 )
 if %selected_game%==csgo (
 	if exist "%steam_path%\steamapps\common\Counter-Strike Global Offensive\bin" (
 		echo [%time%]: Selected game: Counter Strike: Global Offensive. >> log.txt
 		set "bin_path=%steam_path%\steamapps\common\Counter-Strike Global Offensive\bin"
 		set file_prefix=csgo
-	) else echo [%time%]: Couldn't locate bin folder. >> log.txt &exit
+	) else (
+		call :show_msg "Couldn't locate the 'bin' folder inside '%steam_path%\steamapps\common\Counter-Strike Global Offensive'." 16
+		echo [%time%]: Couldn't locate bin folder. >> log.txt &exit
+	)
 )
 
 set "state_es=   "
@@ -194,8 +202,8 @@ set "state_fr=   "
 set "state_original=   "
 
 ::Check if the hlc config file is stored inside bin... This file just tells this crappy function wich language is being used rn. If not found, just set that user is using Valve's DLL.
+set /p current_language=<"%bin_path%\HLC\language_selected.hlc"
 if exist "%bin_path%\HLC\language_selected.hlc" (
-	set /p current_language=<"%bin_path%\HLC\language_selected.hlc"
 	echo [%time%]: Getting current config from "%bin_path%\HLC\language_selected.hlc". {current_language=%current_language%} >> log.txt
 	if "%current_language%"=="spanish" set state_es=[√]
 	if "%current_language%"=="french" set state_fr=[√]
@@ -256,6 +264,11 @@ if %errorlevel% == 0 (
 	copy "%temp%\HLC\%file_prefix%_%selected_dll%.dll" "%bin_path%\hammer_dll.dll" /y >nul &&echo [%time%]: %selected_dll% DLL has been copied succesfully as "%bin_path%\hammer_dll.dll". >> log.txt
 	if not exist "%bin_path%\HLC" mkdir "%bin_path%\HLC"
 	echo %selected_dll%> "%bin_path%\HLC\language_selected.hlc"
+	if "%hammer_closed%" == "1" (
+		echo [%time%]: Starting Hammer... >> log.txt
+		start "" "%bin_path%\hammer.exe" -nop4
+		set hammer_closed=0
+	)
 	
 	goto install_end
 )
@@ -308,10 +321,10 @@ exit /b
 ::This function will try to find where is Steam located.
 :steam_find
 cls
-if exist "%temp%\HLC\steam_path.hlc" set /p "steam_path="<%temp%\HLC\steam_path.hlc
+if exist "%cd%\steam_path.hlc" set /p "steam_path="<%cd%\steam_path.hlc
 if exist "%ProgramFiles(x86)%\steam\steam.exe" set "steam_path=%ProgramFiles(x86)%\Steam"
 if exist "%ProgramFiles%\Steam\steam.exe" set "steam_path=%ProgramFiles%\Steam"
-
+if exist "%homedrive%\Steam\steam.exe" set "steam_path=%homedrive%\Steam"
 
 if not defined steam_path (
 	if not defined steam_find-log_shown (
@@ -375,6 +388,7 @@ echo    ║ P: Continue with the installation.            ║
 echo    ╚═══════════════════════════════════════════════╝
 choice /c p /n >nul
 if %errorlevel% == 1 (
+	set hammer_closed=1
 	cls
 	echo:
 	echo    ╔═══════════════════════════════════════════════╗
@@ -383,13 +397,12 @@ if %errorlevel% == 1 (
 	echo    ║ Please, wait...                               ║
 	echo    ╚═══════════════════════════════════════════════╝
 	
+	echo [%time%]: Trying to close Hammer >> "log.txt"
 	taskkill /im hammer.exe /f >nul
-	echo [%time%]: Trying to close "hammer.exe" >> "log.txt"
-	timeout 2 /nobreak >nul
+	::timeout 1 /nobreak >nul
 	%colors_normal%
 	goto install_copy
 )
-
 
 
 
@@ -415,6 +428,7 @@ echo ─────────────────────────
 
 set /p steam_path=
 if not defined steam_path (
+	call :show_msg "Please input a valid path." 16
 	echo [%time%]: -INPUT- Not defined. >> log.txt
 	set steam_path=
 	goto steam_find
@@ -424,16 +438,28 @@ echo %steam_path% > "%temp%\HLC\path.tmp"
 findstr "\"" %temp%\HLC\path.tmp
 
 if %errorlevel%==0 (
+	call :show_msg "Please, don't input quotation marks." 16
 	echo [%time%]: -INPUT- Added quotation marks. >> log.txt
 	set steam_path=
 	goto steam_find
 )
 
 if not exist "%steam_path%\steam.exe" (
+	call :show_msg "Couldn't find 'steam.exe' in '%steam_path%'." 16
 	echo [%time%]: Couldn't find "steam.exe" in "%steam_path%". >> log.txt
 	set steam_path=
 	goto steam_find
 )
 
-echo %steam_path%> "%temp%\HLC\steam_path.hlc"
+echo %steam_path%> "%cd%\steam_path.hlc"
+call :show_msg "Your Steam path has been set correctly as '%steam_path%'. This config has been saved in '%cd%\steam_path.hlc'." 64
 goto steam_find
+
+
+
+
+:show_msg
+::call :show_msg "msg" buttons
+echo msgbox1=MsgBox(%1, %2, "HLCInstaller") > "%temp%\HLC\msg.vbs"
+start "" "%temp%\HLC\msg.vbs"
+exit /b
