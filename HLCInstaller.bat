@@ -321,10 +321,15 @@ exit /b
 ::This function will try to find where is Steam located.
 :steam_find
 cls
-if exist "%cd%\steam_path.hlc" set /p "steam_path="<%cd%\steam_path.hlc
-if exist "%ProgramFiles(x86)%\steam\steam.exe" set "steam_path=%ProgramFiles(x86)%\Steam"
-if exist "%ProgramFiles%\Steam\steam.exe" set "steam_path=%ProgramFiles%\Steam"
-if exist "%homedrive%\Steam\steam.exe" set "steam_path=%homedrive%\Steam"
+if exist "%cd%\steam_path.hlc" (
+	set /p "steam_path="<%cd%\steam_path.hlc
+	goto install_pick-game
+)
+
+for %%G in (A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z) do (
+	if exist "%%G:\Steam\steam.exe" set "steam_path=%%G:\Steam"
+	if exist "%%G:\Program Files\Steam\steam.exe" set "steam_path=%%G:\Program Files\Steam"
+)
 
 if not defined steam_path (
 	if not defined steam_find-log_shown (
@@ -333,6 +338,8 @@ if not defined steam_path (
 	)
 	call :error_steam-find_fail
 ) else (
+	echo %steam_path%>"%cd%\steam_path.hlc"
+	call :show_msg "Your Steam path has been found automatically in '%steam_path%'. This config has been saved in '%cd%\steam_path.hlc'." 64
 	echo [%time%]: Steam located at: "%steam_path%" >> log.txt
 	goto install_pick-game
 )
