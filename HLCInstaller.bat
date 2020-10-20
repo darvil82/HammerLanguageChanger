@@ -23,8 +23,8 @@ if not defined log_msg (
 
 
 ::Check vars
-set ver=1.3
-set ver_number=6
+set ver=1.4
+set ver_number=7
 echo [Version: "%ver%"] [Compilation: "%ver_number%"] >> log.txt
 
 set "mode=mode con cols=55 lines=20"
