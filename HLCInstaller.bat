@@ -55,7 +55,7 @@ if "%parm1%"=="skip_downloads" (
 	echo [%time%]: Skipping all the possible downloads. >> log.txt
 )
 if "%parm1%"=="download" (
-	if not defined parm2 exit /b
+	if not defined parm1 exit /b
 	echo Downloading "%parm2%" to "%cd%"...
 	call :file_download %parm2%
 	if exist "%temp%\HLC\%parm2%" (
@@ -343,7 +343,6 @@ if exist "%cd%\steam_path.hlc" (
 for %%G in (A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z) do (
 	if exist "%%G:\Steam\steam.exe" set "steam_path=%%G:\Steam"
 	if exist "%%G:\Program Files\Steam\steam.exe" set "steam_path=%%G:\Program Files\Steam"
-	if exist "%%G:\Program Files (x86)\Steam\steam.exe" set "steam_path=%%G:\Program Files (x86)\Steam"
 )
 
 if not defined steam_path (
