@@ -328,6 +328,7 @@ exit /b
 
 
 
+
 ::This function will try to find where is Steam located. First, try to get saved config from 'steam_path.hlc', this will speed up the process without
 ::needing to do a 'heavy' search on every launch. If not found, try to find the Steam folder in the root of the drive and inside Program Files, this check
 ::will be done for every possible letter that a drive can have (the abecedary). If the path was finally found, write it inside 'steam_path.hlc', and
@@ -420,7 +421,7 @@ if %errorlevel% == 1 (
 	echo    ╚═══════════════════════════════════════════════╝
 	
 	echo [%time%]: Trying to close Hammer >> "log.txt"
-	taskkill /im hammer.exe /f >nul
+	taskkill /im hammer.exe /f >nul 2>&1
 	timeout 1 /nobreak >nul
 	%colors_normal%
 	goto install_copy
