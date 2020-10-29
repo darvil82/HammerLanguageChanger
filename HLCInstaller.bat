@@ -24,8 +24,8 @@ if not defined log_msg (
 
 
 ::Check vars
-set ver=1.4.2
-set ver_number=9
+set ver=1.4.1
+set ver_number=8
 
 if not defined log_msg echo [Version: "%ver%"] [Build: "%ver_number%"] >> log.txt
 set log_msg=1
