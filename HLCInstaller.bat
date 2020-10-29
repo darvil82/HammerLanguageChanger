@@ -329,7 +329,7 @@ exit /b
 
 
 ::This function will try to find where is Steam located. First, try to get saved config from 'steam_path.hlc', this will speed up the process without
-::needing to do a 'heavy' search on every launch. If not found, try to find the Steam in the root of the drive and inside Program Files, this check
+::needing to do a 'heavy' search on every launch. If not found, try to find the Steam folder in the root of the drive and inside Program Files, this check
 ::will be done for every possible letter that a drive can have (the abecedary). If the path was finally found, write it inside 'steam_path.hlc', and
 ::if not, ask the user where is it.
 :steam_find
