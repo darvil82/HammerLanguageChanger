@@ -330,34 +330,38 @@ exit /b
 
 
 ::This function will try to find where is Steam located. First, try to get saved config from 'steam_path.hlc', this will speed up the process without
-::needing to do a 'heavy' search on every launch. If not found, try to find the Steam folder in the root of the drive and inside Program Files, this check
-::will be done for every possible letter that a drive can have (the abecedary). If the path was finally found, write it inside 'steam_path.hlc', and
-::if not, ask the user where is it.
+::needing to do a 'heavy' search on every launch. If not found, try to find the Steam folder by reading the registry key that Steam made. If the path
+::was finally found, write it inside 'steam_path.hlc', and if not, ask the user where is it.
 :steam_find
 cls
 if exist "%cd%\steam_path.hlc" (
 	set /p "steam_path="<%cd%\steam_path.hlc
-	echo [%time%]: Steam located at: "!steam_path!" ^(Got from: '%cd%/steam_path.hlc'^) >> log.txt
+	echo [%time%]: ^(steam_find^) Steam located at: "!steam_path!" ^(Got from: '%cd%/steam_path.hlc'^) >> log.txt
 	goto install_pick-game
 )
 
-for %%G in (A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z) do (
-	if exist "%%G:\Steam\steam.exe" set "steam_path=%%G:\Steam"
-	if exist "%%G:\Program Files\Steam\steam.exe" set "steam_path=%%G:\Program Files\Steam"
-	if exist "%%G:\Program Files (x86)\Steam\steam.exe" set "steam_path=%%G:\Program Files (x86)\Steam"
-)
+reg query HKCU\Software\Valve\Steam /v SteamPath > "%temp%\HLC\path.tmp"
+if "%errorlevel%"=="0" for /f "usebackq tokens=1,2* skip=2" %%G in ("%temp%\HLC\path.tmp") do set steam_path=%%I
 
 if not defined steam_path (
 	if not defined steam_find-log_shown (
-		echo [%time%]: Couldn't find the Steam path automatically. >> log.txt
+		echo [%time%]: ^(steam_find^) Couldn't find the Steam path automatically. >> log.txt
 		set steam_find-log_shown=1
 	)
 	call :error_steam-find_fail
 ) else (
-	echo %steam_path%>"%cd%\steam_path.hlc"
-	call :show_msg "Your Steam path has been found automatically in '%steam_path%'. This config has been saved in '%cd%\steam_path.hlc'." 64
-	echo [%time%]: Steam located at: "%steam_path%" >> log.txt
-	goto install_pick-game
+	if not exist "%steam_path%/steam.exe" (
+		if not defined steam_find-log_shown (
+			echo [%time%]: ^(steam_find^) Couldn't find "Steam.exe" in "%steam_path%". >> log.txt
+			set steam_find-log_shown=1
+		)
+		call :error_steam-find_fail
+	) else (
+		echo %steam_path%>"%cd%\steam_path.hlc"
+		call :show_msg "Your Steam path has been found automatically in '%steam_path%'. This config has been saved in '%cd%\steam_path.hlc'." 64
+		echo [%time%]: ^(steam_find^) Steam located at: "%steam_path%" >> log.txt
+		goto install_pick-game
+	)
 )
 
 
@@ -458,8 +462,8 @@ if not defined steam_path (
 	goto steam_find
 )
 
-echo %steam_path% > "%temp%\HLC\path.tmp"
-findstr "\"" %temp%\HLC\path.tmp
+echo %steam_path% > "%temp%\HLC\input.tmp"
+findstr "\"" %temp%\HLC\input.tmp
 
 if %errorlevel%==0 (
 	call :show_msg "Please, don't input quotation marks." 16
