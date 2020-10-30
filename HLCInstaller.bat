@@ -341,21 +341,21 @@ if exist "%cd%\steam_path.hlc" (
 )
 
 reg query HKCU\Software\Valve\Steam /v SteamPath > "%temp%\HLC\path.tmp"
-if "%errorlevel%"=="0" for /f "usebackq tokens=1,2* skip=2" %%G in ("%temp%\HLC\path.tmp") do set steam_path=%%I
+if "%errorlevel%"=="0" for /f "usebackq tokens=1,2* skip=2" %%G in ("%temp%\HLC\path.tmp") do set "steam_path=%%I"
 
 if not defined steam_path (
 	if not defined steam_find-log_shown (
 		echo [%time%]: ^(steam_find^) Couldn't find the Steam path automatically. >> log.txt
 		set steam_find-log_shown=1
 	)
-	call :error_steam-find_fail
+	goto error_steam-find_fail
 ) else (
 	if not exist "%steam_path%/steam.exe" (
 		if not defined steam_find-log_shown (
 			echo [%time%]: ^(steam_find^) Couldn't find "Steam.exe" in "%steam_path%". >> log.txt
 			set steam_find-log_shown=1
 		)
-		call :error_steam-find_fail
+		goto error_steam-find_fail
 	) else (
 		echo %steam_path%>"%cd%\steam_path.hlc"
 		call :show_msg "Your Steam path has been found automatically in '%steam_path%'. This config has been saved in '%cd%\steam_path.hlc'." 64
