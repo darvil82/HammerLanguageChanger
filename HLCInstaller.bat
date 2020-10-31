@@ -214,7 +214,7 @@ set "state_original=   "
 ::Check if the hlc config file is stored inside bin... This file just tells this wich language is being used rn. If not found, just set that user is using Valve's DLL.
 if exist "%bin_path%\HLC\language_selected.hlc" (
 	set /p current_language=<"%bin_path%\HLC\language_selected.hlc"
-	echo "[%time%]: Getting current config from '%bin_path%\HLC\language_selected.hlc"' {current_language=!current_language!}" >> log.txt
+	echo [%time%]: Getting current config from '%bin_path%\HLC\language_selected.hlc' {current_language=!current_language!} >> log.txt
 	if "!current_language!"=="spanish" set state_es=[√]
 	if "!current_language!"=="french" set state_fr=[√]
 	if "!current_language!"=="original" set state_original=[√]
