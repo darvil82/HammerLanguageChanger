@@ -187,23 +187,23 @@ if %errorlevel% == 6 start "" "https://github.com/L89David/HammerLanguageChanger
 %mode%
 
 if %selected_game%==p2 (
-	if exist "%steam_path%\steamapps\common\Portal 2\bin" (
+	if exist "!steam_path!\steamapps\common\Portal 2\bin" (
 		echo [%time%]: Selected game: Portal 2. >> log.txt
-		set "bin_path=%steam_path%\steamapps\common\Portal 2\bin"
+		set "bin_path=!steam_path!\steamapps\common\Portal 2\bin"
 		set file_prefix=p2
 	) else (
-		call :show_msg "Couldn't locate the 'bin' folder inside '%steam_path%\steamapps\common\Portal 2'." 16
-		echo [%time%]: Couldn't locate bin folder in '%steam_path%\steamapps\common\Portal 2'. >> log.txt &exit
+		call :show_msg "Couldn't locate the 'bin' folder inside '!steam_path!\steamapps\common\Portal 2'." 16
+		echo [%time%]: Couldn't locate bin folder in '!steam_path!\steamapps\common\Portal 2'. >> log.txt &exit
 	)
 )
 if %selected_game%==csgo (
-	if exist "%steam_path%\steamapps\common\Counter-Strike Global Offensive\bin" (
+	if exist "!steam_path!\steamapps\common\Counter-Strike Global Offensive\bin" (
 		echo [%time%]: Selected game: Counter Strike: Global Offensive. >> log.txt
-		set "bin_path=%steam_path%\steamapps\common\Counter-Strike Global Offensive\bin"
+		set "bin_path=!steam_path!\steamapps\common\Counter-Strike Global Offensive\bin"
 		set file_prefix=csgo
 	) else (
-		call :show_msg "Couldn't locate the 'bin' folder inside '%steam_path%\steamapps\common\Counter-Strike Global Offensive'." 16
-		echo [%time%]: Couldn't locate bin folder in '%steam_path%\steamapps\common\Counter-Strike Global Offensive'. >> log.txt &exit
+		call :show_msg "Couldn't locate the 'bin' folder inside '!steam_path!\steamapps\common\Counter-Strike Global Offensive'." 16
+		echo "[%time%]: Couldn't locate bin folder in '!steam_path!\steamapps\common\Counter-Strike Global Offensive'." >> log.txt &exit
 	)
 )
 
@@ -214,7 +214,7 @@ set "state_original=   "
 ::Check if the hlc config file is stored inside bin... This file just tells this wich language is being used rn. If not found, just set that user is using Valve's DLL.
 if exist "%bin_path%\HLC\language_selected.hlc" (
 	set /p current_language=<"%bin_path%\HLC\language_selected.hlc"
-	echo [%time%]: Getting current config from "%bin_path%\HLC\language_selected.hlc". {current_language=!current_language!} >> log.txt
+	echo "[%time%]: Getting current config from '%bin_path%\HLC\language_selected.hlc"' {current_language=!current_language!}" >> log.txt
 	if "!current_language!"=="spanish" set state_es=[√]
 	if "!current_language!"=="french" set state_fr=[√]
 	if "!current_language!"=="original" set state_original=[√]
@@ -350,16 +350,16 @@ if not defined steam_path (
 	)
 	goto error_steam-find_fail
 ) else (
-	if not exist "%steam_path%/steam.exe" (
+	if not exist "!steam_path!/steam.exe" (
 		if not defined steam_find-log_shown (
-			echo [%time%]: ^(steam_find^) Couldn't find "Steam.exe" in "%steam_path%". >> log.txt
+			echo [%time%]: ^(steam_find^) Couldn't find "Steam.exe" in "!steam_path!". >> log.txt
 			set steam_find-log_shown=1
 		)
 		goto error_steam-find_fail
 	) else (
-		echo %steam_path%>"%cd%\steam_path.hlc"
-		call :show_msg "Your Steam path has been found automatically in '%steam_path%'. This config has been saved in '%cd%\steam_path.hlc'." 64
-		echo [%time%]: ^(steam_find^) Steam located at: "%steam_path%" >> log.txt
+		echo !steam_path!>"%cd%\steam_path.hlc"
+		call :show_msg "Your Steam path has been found automatically in '!steam_path!'. This config has been saved in '%cd%\steam_path.hlc'." 64
+		echo [%time%]: ^(steam_find^) Steam located at: "!steam_path!" >> log.txt
 		goto install_pick-game
 	)
 )
@@ -462,7 +462,7 @@ if not defined steam_path (
 	goto steam_find
 )
 
-echo %steam_path% > "%temp%\HLC\input.tmp"
+echo !steam_path! > "%temp%\HLC\input.tmp"
 findstr "\"" %temp%\HLC\input.tmp
 
 if %errorlevel%==0 (
@@ -472,15 +472,15 @@ if %errorlevel%==0 (
 	goto steam_find
 )
 
-if not exist "%steam_path%\steam.exe" (
-	call :show_msg "Couldn't find 'steam.exe' in '%steam_path%'." 16
-	echo [%time%]: Couldn't find "steam.exe" in "%steam_path%". >> log.txt
+if not exist "!steam_path!\steam.exe" (
+	call :show_msg "Couldn't find 'steam.exe' in '!steam_path!'." 16
+	echo [%time%]: Couldn't find "steam.exe" in "!steam_path!". >> log.txt
 	set steam_path=
 	goto steam_find
 )
 
-echo %steam_path%> "%cd%\steam_path.hlc"
-call :show_msg "Your Steam path has been set correctly as '%steam_path%'. This config has been saved in '%cd%\steam_path.hlc'." 64
+echo !steam_path!> "%cd%\steam_path.hlc"
+call :show_msg "Your Steam path has been set correctly as '!steam_path!'. This config has been saved in '%cd%\steam_path.hlc'." 64
 goto steam_find
 
 
