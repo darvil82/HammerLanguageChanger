@@ -46,13 +46,17 @@ title Hammer Language Changer Installer - V%ver%
 set parm1=%1
 set parm2=%2
 
+if "%parm1%"=="help" (
+	echo Available parameters: force_update, skip_downloads, download, ignore_hammer.
+	exit /b
+)
 if "%parm1%"=="force_update" (
 	echo [%time%]: Forcing the program to update... >> log.txt
 	set ver_number=0
 )
 if "%parm1%"=="skip_downloads" (
-	set skip_downloads=1
 	echo [%time%]: Skipping all the possible downloads. >> log.txt
+	set skip_downloads=1
 )
 if "%parm1%"=="download" (
 	if not defined parm2 exit /b
@@ -65,6 +69,10 @@ if "%parm1%"=="download" (
 		call :show_msg "Couldn't download '%parm2%'." 16
 	)
 	exit /b
+)
+if "%parm1%"=="ignore_hammer" (
+	echo [%time%]: Ignoring Hammer state when copying files... >> log.txt
+	set ignore_hammer=1
 )
 
 
@@ -266,21 +274,21 @@ if not exist "%temp%\HLC\%file_prefix%_%selected_dll%.dll" (
 ::Trying to catch hammer open. If it's open, warn the user before closing it. If not, continue.
 tasklist |find "hammer.exe" >nul
 if %errorlevel% == 0 (
-	call :error_hammer-open
-) else (
-	::Copying the file. As you can see, it also created that file in bin, wich will tell the Installer what language is being used rn.
-	if not exist "%temp%\HLC\%file_prefix%_%selected_dll%.dll" echo [%time%]: Couldn't find "%temp%\HLC\%file_prefix%_%selected_dll%.dll". Restarting. >> log.txt &goto checksum
-	copy "%temp%\HLC\%file_prefix%_%selected_dll%.dll" "%bin_path%\hammer_dll.dll" /y >nul &&echo [%time%]: %selected_dll% DLL has been copied succesfully as "%bin_path%\hammer_dll.dll". >> log.txt
-	if not exist "%bin_path%\HLC" mkdir "%bin_path%\HLC"
-	echo %selected_dll%> "%bin_path%\HLC\language_selected.hlc"
-	if "%hammer_closed%" == "1" (
-		echo [%time%]: Starting Hammer... >> log.txt
-		start "" "%bin_path%\hammer.exe" -nop4
-		set hammer_closed=0
-	)
-	
-	goto install_end
+	if not defined ignore_hammer call :error_hammer-open
 )
+
+::Copying the file. As you can see, it also created that file in bin, wich will tell the Installer what language is being used rn.
+if not exist "%temp%\HLC\%file_prefix%_%selected_dll%.dll" echo [%time%]: Couldn't find "%temp%\HLC\%file_prefix%_%selected_dll%.dll". Restarting. >> log.txt &goto checksum
+copy "%temp%\HLC\%file_prefix%_%selected_dll%.dll" "%bin_path%\hammer_dll.dll" /y >nul &&echo [%time%]: %selected_dll% DLL has been copied succesfully as "%bin_path%\hammer_dll.dll". >> log.txt
+if not exist "%bin_path%\HLC" mkdir "%bin_path%\HLC"
+echo %selected_dll%> "%bin_path%\HLC\language_selected.hlc"
+if "%hammer_closed%" == "1" (
+	echo [%time%]: Starting Hammer... >> log.txt
+	start "" "%bin_path%\hammer.exe" -nop4
+	set hammer_closed=0
+)
+
+goto install_end
 
 
 
