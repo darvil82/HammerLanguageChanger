@@ -5,6 +5,7 @@ chcp 65001 >nul
 setlocal EnableDelayedExpansion
 echo Please, wait...
 
+
 :checksum
 if "%log_msg%" == "1" (
 	echo:
@@ -24,8 +25,8 @@ if not defined log_msg (
 
 
 ::Check vars
-set ver=1.4.2
-set ver_number=9
+set ver=1.4.3
+set ver_number=10
 
 if not defined log_msg echo [Version: "%ver%"] [Build: "%ver_number%"] >> log.txt
 set log_msg=1
@@ -120,8 +121,8 @@ echo [%time%]: Checking for updates... >> log.txt
 bitsadmin /transfer /download https://github.com/L89David/HammerLanguageChanger/blob/master/info/version.hlc?raw=true "%temp%\HLC\version.hlc" >nul
 set /p ver_git_number=<"%temp%\HLC\version.hlc"
 del "%temp%\HLC\version.hlc" /f
-if "%ver_number%" LSS "%ver_git_number%" (
-	echo [%time%]: A newer version has been found [%ver_git_number%] >> log.txt
+if %ver_number% LSS %ver_git_number% (
+	echo [%time%]: A newer version has been found ^(GitHub: "!ver_git_number!"^). >> log.txt
 	%colors_info%
 	
 	cls
@@ -139,7 +140,7 @@ if "%ver_number%" LSS "%ver_git_number%" (
 	start "" "https://github.com/L89David/HammerLanguageChanger/releases"
 	if exist "%temp%\HLC" rd "%temp%\HLC"
 	exit
-) else echo [%time%]: Using latest version. >> log.txt
+) else echo [%time%]: Using latest version (GitHub: "!ver_git_number!"). >> log.txt
 
 
 call :steam_find
