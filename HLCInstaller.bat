@@ -31,8 +31,8 @@ set ver_number=10
 if not defined log_msg echo [Version: "%ver%"] [Build: "%ver_number%"] >> log.txt
 set log_msg=1
 
-set "mode=mode con cols=55 lines=20"
-set "mode2=mode con cols=55 lines=30"
+mode con cols=55 lines=8
+set mode_lines=8
 
 set colors_normal=color f1
 set colors_error=color fc
@@ -91,7 +91,6 @@ if "%skip_downloads%" == "1" goto steam_find
 
 
 ::Check if user is connected to internet
-%mode%
 %colors_normal%
 cls
 echo:
@@ -124,6 +123,7 @@ del "%temp%\HLC\version.hlc" /f
 if %ver_number% LSS %ver_git_number% (
 	echo [%time%]: A newer version has been found ^(GitHub: "!ver_git_number!"^). >> log.txt
 	%colors_info%
+	call :mode_change 11
 	
 	cls
 	echo:
@@ -150,7 +150,7 @@ call :steam_find
 
 
 :install_pick-game
-%mode2%
+call :mode_change 27
 %colors_normal%
 
 cls
@@ -193,8 +193,6 @@ if %errorlevel% == 6 start "" "https://github.com/L89David/HammerLanguageChanger
 
 
 :install_pick-dll
-%mode%
-
 if %selected_game%==p2 (
 	if exist "!steam_path!\steamapps\common\Portal 2\bin" (
 		echo [%time%]: Selected game: Portal 2. >> log.txt
@@ -235,6 +233,7 @@ if exist "%bin_path%\HLC\language_selected.hlc" (
 
 cls
 %colors_normal%
+call :mode_change 15
 echo:
 echo    ╔═══════════════════════════════════════════════╗
 echo    ║ Hammer Language Changer Installer       [██▒] ║
@@ -258,7 +257,7 @@ if %errorlevel% == 2 set selected_dll=original
 
 
 :install_copy
-%mode%
+call :mode_change 8
 cls
 echo:
 echo    ╔═══════════════════════════════════════════════╗
@@ -296,7 +295,7 @@ goto install_end
 
 
 :install_end
-%mode%
+call :mode_change 10
 
 (
 	echo [%time%]: Installation finished succesfully.
@@ -379,6 +378,7 @@ if not defined steam_path (
 :error_no-internet
 cls
 %colors_error%
+call :mode_change 15
 
 echo:
 echo    ╔═══════════════════════════════════════════════╗
@@ -405,7 +405,7 @@ goto error_no-internet
 
 :error_hammer-open
 echo [%time%]: Detected hammer running. >> log.txt
-%mode%
+call :mode_change 14
 %colors_error%
 
 cls
@@ -425,6 +425,7 @@ echo    ╚═══════════════════════
 choice /c p /n >nul
 if %errorlevel% == 1 (
 	set hammer_closed=1
+	call :mode_change 7
 	cls
 	echo:
 	echo    ╔═══════════════════════════════════════════════╗
@@ -432,7 +433,7 @@ if %errorlevel% == 1 (
 	echo    ╟───────────────────────────────────────────────╢
 	echo    ║ Please, wait...                               ║
 	echo    ╚═══════════════════════════════════════════════╝
-	
+
 	echo [%time%]: Trying to close Hammer >> "log.txt"
 	taskkill /im hammer.exe /f >nul 2>&1
 	timeout 1 /nobreak >nul
@@ -446,7 +447,7 @@ if %errorlevel% == 1 (
 ::If Steam path auto search failed, this will ask the user where is steam located. After checking by itself that the path is correct, save it in 'steam_path.hlc'.
 :error_steam-find_fail
 cls
-%mode%
+call :mode_change 20
 %colors_error%
 
 echo:
@@ -500,4 +501,23 @@ goto steam_find
 ::call :show_msg "msg" buttons
 echo msgbox1=MsgBox(%1, %2, "HLCInstaller") > "%temp%\HLC\msg.vbs"
 start "" "%temp%\HLC\msg.vbs"
+exit /b
+
+
+
+
+::Function to resize the window dynamically.
+:mode_change
+set /a mode_change_parm1=%1
+
+if !mode_change_parm1! LSS !mode_lines! (
+    for /l %%G in (!mode_lines!,-1,!mode_change_parm1!) do (
+       mode con lines=%%G
+    )
+) else (
+    for /l %%G in (!mode_lines!,1,!mode_change_parm1!) do (
+       mode con lines=%%G
+    )
+)
+set mode_lines=%mode_change_parm1%
 exit /b
