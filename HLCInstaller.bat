@@ -75,6 +75,10 @@ if "%parm1%"=="ignore_hammer" (
 	echo [%time%]: Ignoring Hammer state when copying files... >> log.txt
 	set ignore_hammer=1
 )
+if "%parm1%"=="no_transitions" (
+	echo [%time%]: Canceling all mode change transitions... >> log.txt
+	set mode_cancel_transtitions=1
+)
 
 
 
@@ -509,6 +513,10 @@ exit /b
 ::Function to resize the window dynamically.
 :mode_change
 set /a mode_change_parm1=%1
+if %mode_cancel_transtitions%==1 (
+	mode con lines=%mode_change_parm1%
+	exit /b
+)
 
 if !mode_change_parm1! LSS !mode_lines! (
     for /l %%G in (!mode_lines!,-1,!mode_change_parm1!) do (
