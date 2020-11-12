@@ -5,6 +5,7 @@ chcp 65001 >nul
 setlocal EnableDelayedExpansion
 echo Please, wait...
 
+
 :checksum
 if "%log_msg%" == "1" (
 	echo:
@@ -24,14 +25,14 @@ if not defined log_msg (
 
 
 ::Check vars
-set ver=1.4.2
-set ver_number=9
+set ver=1.5
+set ver_number=10
 
 if not defined log_msg echo [Version: "%ver%"] [Build: "%ver_number%"] >> log.txt
 set log_msg=1
 
-set "mode=mode con cols=55 lines=20"
-set "mode2=mode con cols=55 lines=30"
+mode con cols=55 lines=8
+set mode_lines=8
 
 set colors_normal=color f1
 set colors_error=color fc
@@ -46,13 +47,17 @@ title Hammer Language Changer Installer - V%ver%
 set parm1=%1
 set parm2=%2
 
+if "%parm1%"=="help" (
+	echo Available parameters: force_update, skip_downloads, download, ignore_hammer.
+	exit /b
+)
 if "%parm1%"=="force_update" (
 	echo [%time%]: Forcing the program to update... >> log.txt
 	set ver_number=0
 )
 if "%parm1%"=="skip_downloads" (
-	set skip_downloads=1
 	echo [%time%]: Skipping all the possible downloads. >> log.txt
+	set skip_downloads=1
 )
 if "%parm1%"=="download" (
 	if not defined parm2 exit /b
@@ -65,6 +70,14 @@ if "%parm1%"=="download" (
 		call :show_msg "Couldn't download '%parm2%'." 16
 	)
 	exit /b
+)
+if "%parm1%"=="ignore_hammer" (
+	echo [%time%]: Ignoring Hammer state when copying files... >> log.txt
+	set ignore_hammer=1
+)
+if "%parm1%"=="no_transitions" (
+	echo [%time%]: Canceling all mode change transitions... >> log.txt
+	set mode_cancel_transtitions=1
 )
 
 
@@ -82,7 +95,6 @@ if "%skip_downloads%" == "1" goto steam_find
 
 
 ::Check if user is connected to internet
-%mode%
 %colors_normal%
 cls
 echo:
@@ -112,9 +124,10 @@ echo [%time%]: Checking for updates... >> log.txt
 bitsadmin /transfer /download https://github.com/L89David/HammerLanguageChanger/blob/master/info/version.hlc?raw=true "%temp%\HLC\version.hlc" >nul
 set /p ver_git_number=<"%temp%\HLC\version.hlc"
 del "%temp%\HLC\version.hlc" /f
-if "%ver_number%" LSS "%ver_git_number%" (
-	echo [%time%]: A newer version has been found [%ver_git_number%] >> log.txt
+if %ver_number% LSS %ver_git_number% (
+	echo [%time%]: A newer version has been found ^(GitHub: "!ver_git_number!"^). >> log.txt
 	%colors_info%
+	call :mode_change 11
 	
 	cls
 	echo:
@@ -131,7 +144,7 @@ if "%ver_number%" LSS "%ver_git_number%" (
 	start "" "https://github.com/L89David/HammerLanguageChanger/releases"
 	if exist "%temp%\HLC" rd "%temp%\HLC"
 	exit
-) else echo [%time%]: Using latest version. >> log.txt
+) else echo [%time%]: Using latest version (GitHub: "!ver_git_number!"). >> log.txt
 
 
 call :steam_find
@@ -141,7 +154,7 @@ call :steam_find
 
 
 :install_pick-game
-%mode2%
+call :mode_change 27
 %colors_normal%
 
 cls
@@ -184,8 +197,6 @@ if %errorlevel% == 6 start "" "https://github.com/L89David/HammerLanguageChanger
 
 
 :install_pick-dll
-%mode%
-
 if %selected_game%==p2 (
 	if exist "!steam_path!\steamapps\common\Portal 2\bin" (
 		echo [%time%]: Selected game: Portal 2. >> log.txt
@@ -226,6 +237,7 @@ if exist "%bin_path%\HLC\language_selected.hlc" (
 
 cls
 %colors_normal%
+call :mode_change 15
 echo:
 echo    ╔═══════════════════════════════════════════════╗
 echo    ║ Hammer Language Changer Installer       [██▒] ║
@@ -249,7 +261,7 @@ if %errorlevel% == 2 set selected_dll=original
 
 
 :install_copy
-%mode%
+call :mode_change 8
 cls
 echo:
 echo    ╔═══════════════════════════════════════════════╗
@@ -266,28 +278,28 @@ if not exist "%temp%\HLC\%file_prefix%_%selected_dll%.dll" (
 ::Trying to catch hammer open. If it's open, warn the user before closing it. If not, continue.
 tasklist |find "hammer.exe" >nul
 if %errorlevel% == 0 (
-	call :error_hammer-open
-) else (
-	::Copying the file. As you can see, it also created that file in bin, wich will tell the Installer what language is being used rn.
-	if not exist "%temp%\HLC\%file_prefix%_%selected_dll%.dll" echo [%time%]: Couldn't find "%temp%\HLC\%file_prefix%_%selected_dll%.dll". Restarting. >> log.txt &goto checksum
-	copy "%temp%\HLC\%file_prefix%_%selected_dll%.dll" "%bin_path%\hammer_dll.dll" /y >nul &&echo [%time%]: %selected_dll% DLL has been copied succesfully as "%bin_path%\hammer_dll.dll". >> log.txt
-	if not exist "%bin_path%\HLC" mkdir "%bin_path%\HLC"
-	echo %selected_dll%> "%bin_path%\HLC\language_selected.hlc"
-	if "%hammer_closed%" == "1" (
-		echo [%time%]: Starting Hammer... >> log.txt
-		start "" "%bin_path%\hammer.exe" -nop4
-		set hammer_closed=0
-	)
-	
-	goto install_end
+	if not defined ignore_hammer call :error_hammer-open
 )
+
+::Copying the file. As you can see, it also created that file in bin, wich will tell the Installer what language is being used rn.
+if not exist "%temp%\HLC\%file_prefix%_%selected_dll%.dll" echo [%time%]: Couldn't find "%temp%\HLC\%file_prefix%_%selected_dll%.dll". Restarting. >> log.txt &goto checksum
+copy "%temp%\HLC\%file_prefix%_%selected_dll%.dll" "%bin_path%\hammer_dll.dll" /y >nul &&echo [%time%]: %selected_dll% DLL has been copied succesfully as "%bin_path%\hammer_dll.dll". >> log.txt
+if not exist "%bin_path%\HLC" mkdir "%bin_path%\HLC"
+echo %selected_dll%> "%bin_path%\HLC\language_selected.hlc"
+if "%hammer_closed%" == "1" (
+	echo [%time%]: Starting Hammer... >> log.txt
+	start "" "%bin_path%\hammer.exe" -nop4
+	set hammer_closed=0
+)
+
+goto install_end
 
 
 
 
 
 :install_end
-%mode%
+call :mode_change 10
 
 (
 	echo [%time%]: Installation finished succesfully.
@@ -370,6 +382,7 @@ if not defined steam_path (
 :error_no-internet
 cls
 %colors_error%
+call :mode_change 15
 
 echo:
 echo    ╔═══════════════════════════════════════════════╗
@@ -396,7 +409,7 @@ goto error_no-internet
 
 :error_hammer-open
 echo [%time%]: Detected hammer running. >> log.txt
-%mode%
+call :mode_change 14
 %colors_error%
 
 cls
@@ -416,6 +429,7 @@ echo    ╚═══════════════════════
 choice /c p /n >nul
 if %errorlevel% == 1 (
 	set hammer_closed=1
+	call :mode_change 7
 	cls
 	echo:
 	echo    ╔═══════════════════════════════════════════════╗
@@ -423,7 +437,7 @@ if %errorlevel% == 1 (
 	echo    ╟───────────────────────────────────────────────╢
 	echo    ║ Please, wait...                               ║
 	echo    ╚═══════════════════════════════════════════════╝
-	
+
 	echo [%time%]: Trying to close Hammer >> "log.txt"
 	taskkill /im hammer.exe /f >nul 2>&1
 	timeout 1 /nobreak >nul
@@ -437,7 +451,7 @@ if %errorlevel% == 1 (
 ::If Steam path auto search failed, this will ask the user where is steam located. After checking by itself that the path is correct, save it in 'steam_path.hlc'.
 :error_steam-find_fail
 cls
-%mode%
+call :mode_change 20
 %colors_error%
 
 echo:
@@ -491,4 +505,27 @@ goto steam_find
 ::call :show_msg "msg" buttons
 echo msgbox1=MsgBox(%1, %2, "HLCInstaller") > "%temp%\HLC\msg.vbs"
 start "" "%temp%\HLC\msg.vbs"
+exit /b
+
+
+
+
+::Function to resize the window dynamically.
+:mode_change
+set /a mode_change_parm1=%1
+if "%mode_cancel_transtitions%"=="1" (
+	mode con lines=%mode_change_parm1%
+	exit /b
+)
+
+if !mode_change_parm1! LSS !mode_lines! (
+    for /l %%G in (!mode_lines!,-1,!mode_change_parm1!) do (
+       mode con lines=%%G
+    )
+) else (
+    for /l %%G in (!mode_lines!,1,!mode_change_parm1!) do (
+       mode con lines=%%G
+    )
+)
+set mode_lines=%mode_change_parm1%
 exit /b
