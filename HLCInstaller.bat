@@ -61,11 +61,11 @@ if "%parm1%"=="skip_downloads" (
 )
 if "%parm1%"=="download" (
 	if not defined parm2 exit /b
-	echo Downloading "%parm2%" to "%cd%"...
+	echo Downloading "%parm2%" to "!cd!"...
 	call :file_download %parm2%
-	if exist "%temp%\HLC\%parm2%" (
-		copy "%temp%\HLC\%parm2%" "%cd%" >nul
-		call :show_msg "Downloaded '%parm2%' to '%cd%'." 64
+	if exist "!temp!\HLC\%parm2%" (
+		copy "!temp!\HLC\%parm2%" "!cd!" >nul
+		call :show_msg "Downloaded '%parm2%' to '!cd!'." 64
 	) else (
 		call :show_msg "Couldn't download '%parm2%'." 16
 	)
@@ -83,11 +83,11 @@ if "%parm1%"=="no_transitions" (
 
 
 ::Check files
-if not exist "%temp%\HLC" (
-	mkdir "%temp%\HLC"
+if not exist "!temp!\HLC" (
+	mkdir "!temp!\HLC"
 ) else (
-	rd "%temp%\HLC" /s /q
-	mkdir "%temp%\HLC"
+	rd "!temp!\HLC" /s /q
+	mkdir "!temp!\HLC"
 )
 
 if "%skip_downloads%" == "1" goto steam_find
@@ -121,9 +121,9 @@ echo    ╚═══════════════════════
 echo [%time%]: Checking for updates... >> log.txt
 
 ::Download the git ver file, wich contents the latest version number. Then compare it with the current version.
-bitsadmin /transfer /download https://github.com/L89David/HammerLanguageChanger/blob/master/info/version.hlc?raw=true "%temp%\HLC\version.hlc" >nul
-set /p ver_git_number=<"%temp%\HLC\version.hlc"
-del "%temp%\HLC\version.hlc" /f
+bitsadmin /transfer /download https://github.com/L89David/HammerLanguageChanger/blob/master/info/version.hlc?raw=true "!temp!\HLC\version.hlc" >nul
+set /p ver_git_number=<"!temp!\HLC\version.hlc"
+del "!temp!\HLC\version.hlc" /f
 if %ver_number% LSS %ver_git_number% (
 	echo [%time%]: A newer version has been found ^(GitHub: "!ver_git_number!"^). >> log.txt
 	%colors_info%
@@ -142,7 +142,7 @@ if %ver_number% LSS %ver_git_number% (
 	echo     New Build Nº: %ver_git_number%
 	pause>nul
 	start "" "https://github.com/L89David/HammerLanguageChanger/releases"
-	if exist "%temp%\HLC" rd "%temp%\HLC"
+	if exist "!temp!\HLC" rd "!temp!\HLC"
 	exit
 ) else echo [%time%]: Using latest version (GitHub: "!ver_git_number!"). >> log.txt
 
@@ -223,9 +223,9 @@ set "state_fr=   "
 set "state_original=   "
 
 ::Check if the hlc config file is stored inside bin... This file just tells this wich language is being used rn. If not found, just set that user is using Valve's DLL.
-if exist "%bin_path%\HLC\language_selected.hlc" (
-	set /p current_language=<"%bin_path%\HLC\language_selected.hlc"
-	echo [%time%]: Getting current config from '%bin_path%\HLC\language_selected.hlc' {current_language=!current_language!} >> log.txt
+if exist "!bin_path!\HLC\language_selected.hlc" (
+	set /p current_language=<"!bin_path!\HLC\language_selected.hlc"
+	echo [%time%]: Getting current config from '!bin_path!\HLC\language_selected.hlc' {current_language=!current_language!} >> log.txt
 	if "!current_language!"=="spanish" set state_es=[√]
 	if "!current_language!"=="french" set state_fr=[√]
 	if "!current_language!"=="original" set state_original=[√]
@@ -271,7 +271,7 @@ echo    ║ Downloading and copying DLL...                ║
 echo    ║ Please wait...                                ║
 echo    ╚═══════════════════════════════════════════════╝
 
-if not exist "%temp%\HLC\%file_prefix%_%selected_dll%.dll" (
+if not exist "!temp!\HLC\%file_prefix%_%selected_dll%.dll" (
 	call :file_download %file_prefix%_%selected_dll%.dll
 ) else echo [%time%]: Found "%file_prefix%_%selected_dll%.dll". No need to redownload it. >> log.txt
 
@@ -282,13 +282,13 @@ if %errorlevel% == 0 (
 )
 
 ::Copying the file. As you can see, it also created that file in bin, wich will tell the Installer what language is being used rn.
-if not exist "%temp%\HLC\%file_prefix%_%selected_dll%.dll" echo [%time%]: Couldn't find "%temp%\HLC\%file_prefix%_%selected_dll%.dll". Restarting. >> log.txt &goto checksum
-copy "%temp%\HLC\%file_prefix%_%selected_dll%.dll" "%bin_path%\hammer_dll.dll" /y >nul &&echo [%time%]: %selected_dll% DLL has been copied succesfully as "%bin_path%\hammer_dll.dll". >> log.txt
-if not exist "%bin_path%\HLC" mkdir "%bin_path%\HLC"
-echo %selected_dll%> "%bin_path%\HLC\language_selected.hlc"
+if not exist "!temp!\HLC\%file_prefix%_%selected_dll%.dll" echo [%time%]: Couldn't find "!temp!\HLC\%file_prefix%_%selected_dll%.dll". Restarting. >> log.txt &goto checksum
+copy "!temp!\HLC\%file_prefix%_%selected_dll%.dll" "!bin_path!\hammer_dll.dll" /y >nul &&echo [%time%]: %selected_dll% DLL has been copied succesfully as "!bin_path!\hammer_dll.dll". >> log.txt
+if not exist "!bin_path!\HLC" mkdir "!bin_path!\HLC"
+echo %selected_dll%> "!bin_path!\HLC\language_selected.hlc"
 if "%hammer_closed%" == "1" (
 	echo [%time%]: Starting Hammer... >> log.txt
-	start "" "%bin_path%\hammer.exe" -nop4
+	start "" "!bin_path!\hammer.exe" -nop4
 	set hammer_closed=0
 )
 
@@ -334,7 +334,7 @@ if %errorlevel% == 2 exit
 :file_download
 if "%skip_downloads%" == "1" exit /b
 echo [%time%]: Downloading "%1"... >> log.txt
-bitsadmin /transfer /download https://github.com/L89David/HammerLanguageChanger/blob/master/dlls/%1?raw=true "%temp%\HLC\%1" >nul &&echo [%time%]: Downloaded "%1". >> log.txt
+bitsadmin /transfer /download https://github.com/L89David/HammerLanguageChanger/blob/master/dlls/%1?raw=true "!temp!\HLC\%1" >nul &&echo [%time%]: Downloaded "%1". >> log.txt
 if not %errorlevel% == 0 echo [%time%]: Error while downloading "%1". >> log.txt
 exit /b
 
@@ -346,14 +346,14 @@ exit /b
 ::was finally found, write it inside 'steam_path.hlc', and if not, ask the user where is it.
 :steam_find
 cls
-if exist "%cd%\steam_path.hlc" (
-	set /p "steam_path="<%cd%\steam_path.hlc
-	echo [%time%]: ^(steam_find^) Steam located at: "!steam_path!" ^(Got from: '%cd%/steam_path.hlc'^) >> log.txt
+if exist "!cd!\steam_path.hlc" (
+	set /p "steam_path="<!cd!\steam_path.hlc
+	echo [%time%]: ^(steam_find^) Steam located at: "!steam_path!" ^(Got from: '!cd!/steam_path.hlc'^) >> log.txt
 	goto install_pick-game
 )
 
-reg query HKCU\Software\Valve\Steam /v SteamPath > "%temp%\HLC\path.tmp"
-if "%errorlevel%"=="0" for /f "usebackq tokens=1,2* skip=2" %%G in ("%temp%\HLC\path.tmp") do set "steam_path=%%I"
+reg query HKCU\Software\Valve\Steam /v SteamPath > "!temp!\HLC\path.tmp"
+if "%errorlevel%"=="0" for /f "usebackq tokens=1,2* skip=2" %%G in ("!temp!\HLC\path.tmp") do set "steam_path=%%I"
 
 if not defined steam_path (
 	if not defined steam_find-log_shown (
@@ -369,8 +369,8 @@ if not defined steam_path (
 		)
 		goto error_steam-find_fail
 	) else (
-		echo !steam_path!>"%cd%\steam_path.hlc"
-		call :show_msg "Your Steam path has been found automatically in '!steam_path!'. This config has been saved in '%cd%\steam_path.hlc'." 64
+		echo !steam_path!>"!cd!\steam_path.hlc"
+		call :show_msg "Your Steam path has been found automatically in '!steam_path!'. This config has been saved in '!cd!\steam_path.hlc'." 64
 		echo [%time%]: ^(steam_find^) Steam located at: "!steam_path!" >> log.txt
 		goto install_pick-game
 	)
@@ -476,8 +476,8 @@ if not defined steam_path (
 	goto steam_find
 )
 
-echo !steam_path! > "%temp%\HLC\input.tmp"
-findstr "\"" %temp%\HLC\input.tmp
+echo !steam_path! > "!temp!\HLC\input.tmp"
+findstr "\"" !temp!\HLC\input.tmp
 
 if %errorlevel%==0 (
 	call :show_msg "Please, don't input quotation marks." 16
@@ -493,8 +493,8 @@ if not exist "!steam_path!\steam.exe" (
 	goto steam_find
 )
 
-echo !steam_path!> "%cd%\steam_path.hlc"
-call :show_msg "Your Steam path has been set correctly as '!steam_path!'. This config has been saved in '%cd%\steam_path.hlc'." 64
+echo !steam_path!> "!cd!\steam_path.hlc"
+call :show_msg "Your Steam path has been set correctly as '!steam_path!'. This config has been saved in '!cd!\steam_path.hlc'." 64
 goto steam_find
 
 
@@ -503,8 +503,8 @@ goto steam_find
 ::Function to display simple Visual Basic Script dialog boxes.
 :show_msg
 ::call :show_msg "msg" buttons
-echo msgbox1=MsgBox(%1, %2, "HLCInstaller") > "%temp%\HLC\msg.vbs"
-start "" "%temp%\HLC\msg.vbs"
+echo msgbox1=MsgBox(%1, %2, "HLCInstaller") > "!temp!\HLC\msg.vbs"
+start "" "!temp!\HLC\msg.vbs"
 exit /b
 
 
