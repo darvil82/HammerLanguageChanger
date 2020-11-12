@@ -25,7 +25,7 @@ if not defined log_msg (
 
 
 ::Check vars
-set ver=1.4.3
+set ver=1.5
 set ver_number=10
 
 if not defined log_msg echo [Version: "%ver%"] [Build: "%ver_number%"] >> log.txt
@@ -513,7 +513,7 @@ exit /b
 ::Function to resize the window dynamically.
 :mode_change
 set /a mode_change_parm1=%1
-if %mode_cancel_transtitions%==1 (
+if "%mode_cancel_transtitions%"=="1" (
 	mode con lines=%mode_change_parm1%
 	exit /b
 )
