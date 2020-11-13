@@ -25,7 +25,7 @@ if not defined log_msg (
 
 
 ::Check vars
-set ver=1.5.1
+set ver=1.5.2
 set ver_number=11
 
 if not defined log_msg echo [Version: "%ver%"] [Build: "%ver_number%"] >> log.txt
@@ -462,26 +462,17 @@ echo    ║ Unable to find the Steam path.                ║
 echo    ║ Please, drag the Steam folder to this program ║
 echo    ║ and press ENTER in order to continue          ║
 echo    ║ with the installation.                        ║
-echo    ║                                               ║
-echo    ║ Make sure you remove the quotation marks^^!     ║
 echo    ╚═══════════════════════════════════════════════╝
 echo:
 echo ───────────────────────────────────────────────────────
 
 set /p steam_path=
+::Strip quotation marks from the path. Required.
+set steam_path=%steam_path:"=%
+
 if not defined steam_path (
 	call :show_msg "Please input a valid path." 16
 	echo [%time%]: -INPUT- Not defined. >> log.txt
-	set steam_path=
-	goto steam_find
-)
-
-echo !steam_path! > "!temp!\HLC\input.tmp"
-findstr "\"" !temp!\HLC\input.tmp
-
-if %errorlevel%==0 (
-	call :show_msg "Please, don't input quotation marks." 16
-	echo [%time%]: -INPUT- Added quotation marks. >> log.txt
 	set steam_path=
 	goto steam_find
 )
@@ -521,10 +512,12 @@ if "%mode_cancel_transtitions%"=="1" (
 if !mode_change_parm1! LSS !mode_lines! (
     for /l %%G in (!mode_lines!,-1,!mode_change_parm1!) do (
        mode con lines=%%G
+	   rem ping localhost -n 1 >nul
     )
 ) else (
     for /l %%G in (!mode_lines!,1,!mode_change_parm1!) do (
        mode con lines=%%G
+	   rem ping localhost -n 1 >nul
     )
 )
 set mode_lines=%mode_change_parm1%
