@@ -467,6 +467,7 @@ echo:
 echo ───────────────────────────────────────────────────────
 
 set /p steam_path=
+::Strip quotation marks from the path. Required.
 set steam_path=%steam_path:"=%
 
 if not defined steam_path (
