@@ -467,8 +467,6 @@ echo:
 echo ───────────────────────────────────────────────────────
 
 set /p steam_path=
-::Strip quotation marks from the path. Required.
-set steam_path=%steam_path:"=%
 
 if not defined steam_path (
 	call :show_msg "Please input a valid path." 16
@@ -476,6 +474,9 @@ if not defined steam_path (
 	set steam_path=
 	goto steam_find
 )
+
+::Strip quotation marks from the path. Required.
+set steam_path=%steam_path:"=%
 
 if not exist "!steam_path!\steam.exe" (
 	call :show_msg "Couldn't find 'steam.exe' in '!steam_path!'." 16
