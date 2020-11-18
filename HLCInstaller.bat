@@ -36,7 +36,7 @@ set mode_lines=8
 
 set colors_normal=color f1
 set colors_error=color fc
-set colors_info=color f6
+set colors_info=color fd
 set colors_correct=color f2
 
 title Hammer Language Changer Installer - V%ver%
