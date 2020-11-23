@@ -48,7 +48,7 @@ set parm1=%1
 set parm2=%2
 
 if "%parm1%"=="help" (
-	echo Available parameters: force_update, skip_downloads, download, ignore_hammer.
+	echo Available parameters: force_update, skip_downloads, download, ignore_hammer, no_transitions.
 	exit /b
 )
 if "%parm1%"=="force_update" (
@@ -511,15 +511,15 @@ if "%mode_cancel_transtitions%"=="1" (
 )
 
 if !mode_change_parm1! LSS !mode_lines! (
-    for /l %%G in (!mode_lines!,-1,!mode_change_parm1!) do (
-       mode con lines=%%G
-	   rem ping localhost -n 1 >nul
-    )
+	for /l %%G in (!mode_lines!,-1,!mode_change_parm1!) do (
+		mode con lines=%%G
+		rem ping localhost -n 1 >nul
+	)
 ) else (
-    for /l %%G in (!mode_lines!,1,!mode_change_parm1!) do (
-       mode con lines=%%G
-	   rem ping localhost -n 1 >nul
-    )
+	for /l %%G in (!mode_lines!,1,!mode_change_parm1!) do (
+		mode con lines=%%G
+		rem ping localhost -n 1 >nul
+	)
 )
 set mode_lines=%mode_change_parm1%
 exit /b
