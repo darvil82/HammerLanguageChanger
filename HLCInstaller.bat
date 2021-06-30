@@ -214,7 +214,7 @@ if %selected_game%==csgo (
 		set file_prefix=csgo
 	) else (
 		call :show_msg "Couldn't locate the 'bin' folder inside '!steam_path!\steamapps\common\Counter-Strike Global Offensive'." 16
-		echo "[%time%]: Couldn't locate bin folder in '!steam_path!\steamapps\common\Counter-Strike Global Offensive'." >> log.txt &exit
+		echo [%time%]: Couldn't locate bin folder in '!steam_path!\steamapps\common\Counter-Strike Global Offensive'. >> log.txt &exit
 	)
 )
 
